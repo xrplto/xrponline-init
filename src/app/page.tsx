@@ -250,17 +250,8 @@ export default function Home() {
             <div className="flex flex-col gap-1 sm:gap-4">
               <div className="text-sm sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
               <div className="text-[10px] sm:text-sm space-y-0.5 sm:space-y-2">
-                <h2 className="font-bold text-[#1f3973]">TODAY&apos;S FEATURES:</h2>
-                <ol className="list-inside list-decimal space-y-0.5 sm:space-y-2">
-                  <li>
-                    Access via{" "}
-                    <code className="bg-[#ffffff] px-0.5 py-0.5 border border-[#808080] text-[10px] sm:text-sm">
-                      xrponline.chat
-                    </code>
-                  </li>
-                  <li>Track XRP prices</li>
-                  <li>Join chat rooms</li>
-                </ol>
+                <p>Yes, I&apos;m Brad Garlinghouse.<br/>Built this CTO in 12h.</p>
+                <p className="mt-2 text-right">- Brad G.</p>
               </div>
             </div>
           </div>
