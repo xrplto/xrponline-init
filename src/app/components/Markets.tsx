@@ -1,20 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-interface MarketData {
-  price: number;
-  volume: number;
-  change24h: number;
-}
+const marketData = {
+  price: 0.62,
+  volume: 1234567,
+  change24h: 2.5
+} as const;
 
 export default function Markets() {
-  const [marketData, setMarketData] = useState<MarketData>({
-    price: 0.62,
-    volume: 1234567,
-    change24h: 2.5
-  });
-
   return (
     <div className="space-y-4">
       <div className="bg-white p-4 border-2 border-[#1f3973]">
