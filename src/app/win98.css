@@ -1,0 +1,64 @@
+.win98-window {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.25);
+  padding: 2px;
+}
+
+.win98-title-bar {
+  background: #1f3973;
+  color: white;
+  padding: 2px 3px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.win98-button {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.win98-button:active {
+  border-color: #808080 #ffffff #ffffff #808080;
+  padding: 2px 11px 0 13px;
+}
+
+.win98-desktop {
+  background-color: #000080;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.aol-button {
+  background: linear-gradient(180deg, #4a76c7 0%, #1f3973 100%);
+  color: white;
+  border: 2px solid #000;
+  padding: 4px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.aol-button:hover {
+  background: linear-gradient(180deg, #5a86d7 0%, #2f4983 100%);
+}
+
+.aol-text {
+  color: #1f3973;
+  font-weight: bold;
+}
+
+.dial-up-animation {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+} 
