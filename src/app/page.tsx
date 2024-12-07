@@ -41,6 +41,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState('');
   const [isMinesweeperOpen, setIsMinesweeperOpen] = useState(false);
   const [isMinesweeperMinimized, setIsMinesweeperMinimized] = useState(false);
+  const [isWelcomeNoteOpen, setIsWelcomeNoteOpen] = useState(true);
 
   // Initialize background color from sessionStorage
   useEffect(() => {
@@ -231,35 +232,40 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="absolute top-4 right-4 win98-window" style={{ width: '300px' }}>
-        <div className="win98-title-bar">
-          <span>Welcome Note</span>
-          <div className="flex gap-1">
-            <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">_</button>
-            <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">□</button>
-            <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">×</button>
+      {isWelcomeNoteOpen && (
+        <div className="absolute top-4 right-4 win98-window w-[200px] sm:w-[300px]">
+          <div className="win98-title-bar">
+            <span className="text-xs sm:text-base">Welcome Note</span>
+            <div className="flex gap-1">
+              <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">_</button>
+              <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">□</button>
+              <button 
+                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                onClick={() => setIsWelcomeNoteOpen(false)}
+              >×</button>
+            </div>
           </div>
-        </div>
 
-        <div className="p-4 bg-[#ffffe1]">
-          <div className="flex flex-col gap-4">
-            <div className="text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
-            <div className="text-sm space-y-2">
-              <h2 className="font-bold text-[#1f3973]">TODAY&apos;S FEATURES:</h2>
-              <ol className="list-inside list-decimal space-y-2">
-                <li>
-                  Access chat and other utilities through{" "}
-                  <code className="bg-[#ffffff] px-1 py-0.5 border border-[#808080]">
-                    xrponline.chat
-                  </code>
-                </li>
-                <li>Track real-time XRP prices and market updates</li>
-                <li>Connect with the XRP community in our chat rooms</li>
-              </ol>
+          <div className="p-1.5 sm:p-4 bg-[#ffffe1]">
+            <div className="flex flex-col gap-1 sm:gap-4">
+              <div className="text-sm sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
+              <div className="text-[10px] sm:text-sm space-y-0.5 sm:space-y-2">
+                <h2 className="font-bold text-[#1f3973]">TODAY&apos;S FEATURES:</h2>
+                <ol className="list-inside list-decimal space-y-0.5 sm:space-y-2">
+                  <li>
+                    Access via{" "}
+                    <code className="bg-[#ffffff] px-0.5 py-0.5 border border-[#808080] text-[10px] sm:text-sm">
+                      xrponline.chat
+                    </code>
+                  </li>
+                  <li>Track XRP prices</li>
+                  <li>Join chat rooms</li>
+                </ol>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {isChatOpen && !isChatMinimized && (
         <div
