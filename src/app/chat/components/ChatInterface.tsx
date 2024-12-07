@@ -52,12 +52,22 @@ const isXLink = (url: string): boolean => {
 };
 
 const renderUsername = (message: ChatMessage, currentUser: string) => {
+  const isAdmin = message.username === 'XRPOnline';
   if (message.isPrivate) {
     return message.username === currentUser
       ? `You → ${message.recipient}`
       : `${message.username} → You`;
   }
-  return message.username === currentUser ? 'You' : message.username;
+  return (
+    <span className="flex items-center gap-1">
+      {message.username === currentUser ? 'You' : message.username}
+      {isAdmin && (
+        <span title="Admin" className="text-xs">
+          👑
+        </span>
+      )}
+    </span>
+  );
 };
 
 const renderMessageWithLinks = (message: ChatMessage) => {
@@ -356,9 +366,11 @@ export default function ChatInterface() {
                     ? message.username === username
                       ? 'bg-pink-500 text-white self-end'
                       : 'bg-pink-400 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
-                    : message.username === username
-                      ? 'bg-[#000080] text-white self-end'
-                      : 'bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
+                    : message.username === 'XRPOnline'
+                      ? 'bg-rose-400 text-white self-start'
+                      : message.username === username
+                        ? 'bg-[#000080] text-white self-end'
+                        : 'bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
                 }`}
               >
                 <div className="text-[16px] font-bold mb-2.5">
@@ -380,17 +392,23 @@ export default function ChatInterface() {
               {onlineUsers.map((user) => {
                 const status = getUserStatus(user.lastSeen);
                 const isCurrentUser = user.username === username;
+                const isAdmin = user.username === 'XRPOnline';
                 return (
                   <div
                     key={user.username}
                     className={`text-[10px] py-1 px-2 mb-1 mr-1 md:mr-0 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
-                      selectedUser === user.username ? 'bg-[#000080] text-white' : 
+                      selectedUser === user.username ? 'bg-[#000080] text-white' :
                       isCurrentUser ? 'bg-[#008000] text-white' : 'bg-[#c0c0c0]'
                     }`}
                     onClick={() => !isCurrentUser && setSelectedUser(user.username === selectedUser ? null : user.username)}
                   >
                     <div className="flex items-center gap-1">
                       <span>{user.username}{isCurrentUser ? ' (You)' : ''}</span>
+                      {isAdmin && (
+                        <span title="Admin" className="text-xs">
+                          👑
+                        </span>
+                      )}
                       <span className="flex items-center">
                         <span className={`w-1.5 h-1.5 rounded-full ${
                           status === 'online' ? 'bg-green-500' :
