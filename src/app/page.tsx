@@ -29,13 +29,16 @@ export default function Home() {
     const savedColor = sessionStorage.getItem('desktop-background-color');
     if (savedColor) {
       setBackgroundColor(savedColor);
+      document.documentElement.style.setProperty('--desktop-bg-color', savedColor);
+    } else {
+      document.documentElement.style.setProperty('--desktop-bg-color', DEFAULT_BG_COLOR);
     }
   }, []);
 
-  // Update CSS variable and save to sessionStorage when backgroundColor changes
+  // Update sessionStorage when backgroundColor changes
   useEffect(() => {
-    document.documentElement.style.setProperty('--desktop-bg-color', backgroundColor);
     sessionStorage.setItem('desktop-background-color', backgroundColor);
+    document.documentElement.style.setProperty('--desktop-bg-color', backgroundColor);
   }, [backgroundColor]);
 
   const handleMouseDown = (e: MouseEvent) => {
@@ -62,7 +65,7 @@ export default function Home() {
   return (
     <div 
       className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20" 
-      style={{ backgroundColor }}
+      style={{ backgroundColor: backgroundColor }}
     >
       <a
         href="https://firstledger.net/token/r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp/5852504F6E6C696E650000000000000000000000#"
@@ -160,14 +163,9 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="text-white text-center mb-8 text-2xl font-bold">
-        Welcome to XRPOnline
-        <div className="text-sm dial-up-animation">●● Connected at 56.6 Kbps ●●●</div>
-      </div>
-
-      <main className="win98-window max-w-2xl mx-auto">
+      <div className="absolute top-4 right-4 win98-window" style={{ width: '300px' }}>
         <div className="win98-title-bar">
-          <span>XRPOnline - Your Gateway to Digital Degeneracy</span>
+          <span>Welcome Note</span>
           <div className="flex gap-1">
             <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">_</button>
             <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">□</button>
@@ -175,13 +173,13 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="p-4 bg-[#f0f0f0]">
-          <div className="flex flex-col items-center gap-8">
-            <div className="text-2xl font-bold aol-text">XRPOnline v1.0</div>
-            <div className="bg-white p-4 border-2 border-[#1f3973] w-full">
-              <h2 className="text-center font-bold mb-4 text-[#1f3973]">TODAY&apos;S FEATURES</h2>
-              <ol className="list-inside list-decimal text-sm space-y-4">
-                <li className="mb-2">
+        <div className="p-4 bg-[#ffffe1]">
+          <div className="flex flex-col gap-4">
+            <div className="text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
+            <div className="text-sm space-y-2">
+              <h2 className="font-bold text-[#1f3973]">TODAY&apos;S FEATURES:</h2>
+              <ol className="list-inside list-decimal space-y-2">
+                <li>
                   Access chat and other utilities through{" "}
                   <code className="bg-[#ffffff] px-1 py-0.5 border border-[#808080]">
                     xrponline.chat
@@ -193,7 +191,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {isChatOpen && !isChatMinimized && (
         <div
@@ -410,7 +408,11 @@ export default function Home() {
                       <input
                         type="color"
                         value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        onChange={(e) => {
+                          const newColor = e.target.value;
+                          setBackgroundColor(newColor);
+                          document.documentElement.style.setProperty('--desktop-bg-color', newColor);
+                        }}
                         className="win98-button p-0 h-[30px] w-[50px]"
                       />
                       <input
@@ -436,10 +438,7 @@ export default function Home() {
         </div>
       )}
 
-      <div className="text-white text-center mt-8 text-sm">
-        <div>You&apos;ve Got XRP!</div>
-        <div>© 1999 XRPOnline - All Rights Reserved</div>
-      </div>
+      <div className="mt-8"></div>
 
       <div className="fixed bottom-0 left-0 right-0 h-[30px] bg-[#c0c0c0] border-t-[1px] border-white flex items-center justify-between">
         <div className="flex items-center relative">
