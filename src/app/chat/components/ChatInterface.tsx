@@ -24,9 +24,30 @@ interface EmojiMartData {
   shortcodes: string;
 }
 
+interface GifResult {
+  url: string;
+  preview: string;
+}
+
+interface TenorResult {
+  media_formats: {
+    gif: {
+      url: string;
+    };
+    tinygif: {
+      url: string;
+    };
+  };
+}
+
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
 const renderMessageWithLinks = (text: string) => {
+  const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
+  if (gifMatch) {
+    return <img src={gifMatch[1]} alt="GIF" className="max-w-[200px] rounded" />;
+  }
+
   const parts = text.split(urlRegex);
   return parts.map((part, i) => {
     if (part.match(urlRegex)) {
@@ -53,6 +74,9 @@ export default function ChatInterface() {
   const [isUsernameSet, setIsUsernameSet] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const [gifResults, setGifResults] = useState<GifResult[]>([]);
+  const [gifSearchTerm, setGifSearchTerm] = useState('');
 
   // Replace SSE with polling
   useEffect(() => {
@@ -170,14 +194,59 @@ export default function ChatInterface() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.emoji-picker-container') && !target.closest('.emoji-button')) {
+      if (
+        !target.closest('.emoji-picker-container') && 
+        !target.closest('.emoji-button') &&
+        !target.closest('.gif-picker-container') &&
+        !target.closest('.gif-button')
+      ) {
         setShowEmojiPicker(false);
+        setShowGifPicker(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const searchGifs = async (searchTerm: string) => {
+    try {
+      const response = await fetch(
+        `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(
+          searchTerm
+        )}&limit=20&key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ`
+      );
+      const data = await response.json();
+      const results = data.results.map((item: TenorResult) => ({
+        url: item.media_formats.gif.url,
+        preview: item.media_formats.tinygif.url,
+      }));
+      setGifResults(results);
+    } catch (error) {
+      console.error('Failed to fetch GIFs:', error);
+    }
+  };
+
+  const handleGifSelect = async (gifUrl: string) => {
+    const newMessage: ChatMessage = {
+      text: `[GIF](${gifUrl})`,
+      username: username,
+      timestamp: Date.now()
+    };
+
+    try {
+      await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newMessage),
+      });
+      setShowGifPicker(false);
+    } catch (error) {
+      console.error('Failed to send GIF:', error);
+    }
+  };
 
   if (!isUsernameSet) {
     return (
@@ -254,6 +323,37 @@ export default function ChatInterface() {
         >
           😊
         </button>
+        <button
+          onClick={() => setShowGifPicker(!showGifPicker)}
+          className="gif-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+        >
+          GIF
+        </button>
+        {showGifPicker && (
+          <div className="gif-picker-container absolute bottom-full right-0 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 w-[320px]">
+            <input
+              type="text"
+              value={gifSearchTerm}
+              onChange={(e) => {
+                setGifSearchTerm(e.target.value);
+                searchGifs(e.target.value);
+              }}
+              placeholder="Search GIFs..."
+              className="w-full p-2 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
+            />
+            <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+              {gifResults.map((gif, index) => (
+                <img
+                  key={index}
+                  src={gif.preview}
+                  alt="GIF"
+                  className="w-full cursor-pointer hover:opacity-80"
+                  onClick={() => handleGifSelect(gif.url)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
         <button
           onClick={handleSend}
           className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
