@@ -13,6 +13,9 @@ export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isChatMinimized, setIsChatMinimized] = useState(false);
+  const [isMarketsMinimized, setIsMarketsMinimized] = useState(false);
+  const [isHelpMinimized, setIsHelpMinimized] = useState(false);
 
   const handleMouseDown = (e: MouseEvent) => {
     setIsDragging(true);
@@ -159,7 +162,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {isChatOpen && (
+      {isChatOpen && !isChatMinimized && (
         <div 
           className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
           onClick={(e) => {
@@ -183,12 +186,22 @@ export default function Home() {
               onMouseDown={handleMouseDown}
             >
               <span>Chat Room</span>
-              <button 
-                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
-                onClick={() => setIsChatOpen(false)}
-              >
-                ×
-              </button>
+              <div className="flex gap-1">
+                <button 
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsChatMinimized(true);
+                  }}
+                >
+                  _
+                </button>
+                <button 
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => setIsChatOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-1">
               <ChatInterface />
@@ -197,7 +210,7 @@ export default function Home() {
         </div>
       )}
 
-      {isMarketsOpen && (
+      {isMarketsOpen && !isMarketsMinimized && (
         <div 
           className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
           onClick={(e) => {
@@ -221,12 +234,22 @@ export default function Home() {
               onMouseDown={handleMouseDown}
             >
               <span>Markets</span>
-              <button 
-                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
-                onClick={() => setIsMarketsOpen(false)}
-              >
-                ×
-              </button>
+              <div className="flex gap-1">
+                <button 
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsMarketsMinimized(true);
+                  }}
+                >
+                  _
+                </button>
+                <button 
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => setIsMarketsOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             <div className="w-full bg-white border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-4">
               <Markets />
@@ -235,7 +258,7 @@ export default function Home() {
         </div>
       )}
 
-      {isHelpOpen && (
+      {isHelpOpen && !isHelpMinimized && (
         <div 
           className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
           onClick={(e) => {
@@ -259,12 +282,22 @@ export default function Home() {
               onMouseDown={handleMouseDown}
             >
               <span>Help Center</span>
-              <button 
-                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
-                onClick={() => setIsHelpOpen(false)}
-              >
-                ×
-              </button>
+              <div className="flex gap-1">
+                <button 
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsHelpMinimized(true);
+                  }}
+                >
+                  _
+                </button>
+                <button 
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => setIsHelpOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-4">
               <div className="bg-white p-4 border-2 border-[#1f3973]">
@@ -309,6 +342,55 @@ export default function Home() {
           />
           Start
         </button>
+        <div className="h-[22px] mx-1 border-l-2 border-[#808080] border-r-2 border-white"></div>
+        
+        {isChatOpen && (
+          <button 
+            className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 min-w-[120px] ${isChatMinimized ? 'active' : ''}`}
+            onClick={() => setIsChatMinimized(false)}
+          >
+            <Image
+              src="/window.svg"
+              alt="Chat"
+              width={16}
+              height={16}
+              className="mr-1"
+            />
+            Chat Room
+          </button>
+        )}
+        
+        {isMarketsOpen && (
+          <button 
+            className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 min-w-[120px] ${isMarketsMinimized ? 'active' : ''}`}
+            onClick={() => setIsMarketsMinimized(false)}
+          >
+            <Image
+              src="/file.svg"
+              alt="Markets"
+              width={16}
+              height={16}
+              className="mr-1"
+            />
+            Markets
+          </button>
+        )}
+        
+        {isHelpOpen && (
+          <button 
+            className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 min-w-[120px] ${isHelpMinimized ? 'active' : ''}`}
+            onClick={() => setIsHelpMinimized(false)}
+          >
+            <Image
+              src="/globe.svg"
+              alt="Help"
+              width={16}
+              height={16}
+              className="mr-1"
+            />
+            Help Center
+          </button>
+        )}
       </div>
     </div>
   );
