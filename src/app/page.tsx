@@ -4,6 +4,7 @@ import Image from "next/image";
 import "./win98.css";
 import Markets from './components/Markets';
 import ChatInterface from './chat/components/ChatInterface';
+import Minesweeper from './components/Minesweeper';
 import { useState, MouseEvent, useEffect } from 'react';
 
 const DEFAULT_BG_COLOR = '#008080';
@@ -38,6 +39,8 @@ export default function Home() {
   const [windowSize, setWindowSize] = useState({ width: '95%', height: '400px' });
   const [isMaximized, setIsMaximized] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
+  const [isMinesweeperOpen, setIsMinesweeperOpen] = useState(false);
+  const [isMinesweeperMinimized, setIsMinesweeperMinimized] = useState(false);
 
   // Initialize background color from sessionStorage
   useEffect(() => {
@@ -92,8 +95,8 @@ export default function Home() {
   };
 
   return (
-    <div 
-      className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20" 
+    <div
+      className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20"
       style={{ backgroundColor: backgroundColor }}
     >
       <a
@@ -206,6 +209,24 @@ export default function Home() {
           </div>
           <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
             Internet
+          </span>
+        </button>
+
+        <button
+          onClick={() => setIsMinesweeperOpen(true)}
+          className="flex flex-col items-center w-20 group hover:cursor-pointer"
+        >
+          <div className="w-12 h-12 mb-1">
+            <Image
+              src="/minesweeper.png"
+              alt="Minesweeper"
+              width={48}
+              height={48}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
+            Minesweeper
           </span>
         </button>
       </div>
@@ -554,25 +575,25 @@ export default function Home() {
                 <button className="win98-button px-2 py-1">Help</button>
               </div>
               <div className="flex items-center gap-2 p-1 border-b border-[#808080]">
-                <button 
+                <button
                   className="win98-button px-2 py-1"
                   onClick={() => window.history.back()}
                 >
                   Back
                 </button>
-                <button 
+                <button
                   className="win98-button px-2 py-1"
                   onClick={() => window.history.forward()}
                 >
                   Forward
                 </button>
-                <button 
+                <button
                   className="win98-button px-2 py-1"
                   onClick={() => setIsLoading(false)}
                 >
                   Stop
                 </button>
-                <button 
+                <button
                   className="win98-button px-2 py-1"
                   onClick={() => {
                     setIsLoading(true);
@@ -583,7 +604,7 @@ export default function Home() {
                 >
                   Refresh
                 </button>
-                <button 
+                <button
                   className="win98-button px-2 py-1"
                   onClick={() => {
                     setUrlInput('https://xrpl.org/');
@@ -595,9 +616,9 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-2 p-1 border-b border-[#808080]">
                 <span>Address:</span>
-                <input 
-                  type="text" 
-                  className="win98-button flex-1 px-2 py-1" 
+                <input
+                  type="text"
+                  className="win98-button flex-1 px-2 py-1"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -612,7 +633,7 @@ export default function Home() {
                     }
                   }}
                 />
-                <button 
+                <button
                   className="win98-button px-2 py-1"
                   onClick={() => {
                     setIsLoading(true);
@@ -627,10 +648,10 @@ export default function Home() {
                   Go
                 </button>
               </div>
-              <div 
+              <div
                 className="bg-white p-4 overflow-auto"
-                style={{ 
-                  height: isMaximized ? 'calc(100vh - 140px)' : windowSize.height 
+                style={{
+                  height: isMaximized ? 'calc(100vh - 140px)' : windowSize.height
                 }}
               >
                 {isLoading ? (
@@ -686,11 +707,38 @@ export default function Home() {
         </div>
       )}
 
+      {isMinesweeperOpen && !isMinesweeperMinimized && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsMinesweeperOpen(false);
+            }
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <div
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <Minesweeper
+              onClose={() => setIsMinesweeperOpen(false)}
+              onMinimize={() => setIsMinesweeperMinimized(true)}
+              onMouseDown={handleMouseDown}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="mt-8"></div>
 
       <div className="fixed bottom-0 left-0 right-0 h-[30px] bg-[#c0c0c0] border-t-[1px] border-white flex items-center justify-between">
         <div className="flex items-center relative">
-          <button 
+          <button
             className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 ${isStartMenuOpen ? 'active' : ''}`}
             onClick={() => setIsStartMenuOpen(!isStartMenuOpen)}
           >
@@ -705,13 +753,13 @@ export default function Home() {
           </button>
 
           {isStartMenuOpen && (
-            <div 
+            <div
               className="absolute bottom-full left-1 mb-1 w-[200px] bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] z-50"
               onClick={() => setIsStartMenuOpen(false)}
             >
               <div className="bg-[#000080] absolute left-0 top-0 bottom-0 w-[20px]"></div>
-              
-              <button 
+
+              <button
                 className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
                 onClick={() => {
                   setIsChatOpen(true);
@@ -721,7 +769,7 @@ export default function Home() {
                 Chat Rooms
               </button>
 
-              <button 
+              <button
                 className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
                 onClick={() => {
                   setIsMarketsOpen(true);
@@ -731,7 +779,7 @@ export default function Home() {
                 Markets
               </button>
 
-              <button 
+              <button
                 className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
                 onClick={() => {
                   setIsHelpOpen(true);
@@ -743,7 +791,7 @@ export default function Home() {
 
               <div className="border-t border-[#808080] my-1"></div>
 
-              <button 
+              <button
                 className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
                 onClick={() => {
                   setIsSettingsOpen(true);
@@ -753,7 +801,7 @@ export default function Home() {
                 Display Settings
               </button>
 
-              <button 
+              <button
                 className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
                 onClick={() => {
                   setShowConnectionInfo(true);
@@ -844,6 +892,22 @@ export default function Home() {
                 className="mr-1 invert"
               />
               Internet Explorer
+            </button>
+          )}
+
+          {isMinesweeperOpen && (
+            <button
+              className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 min-w-[120px] ${isMinesweeperMinimized ? 'active' : ''}`}
+              onClick={() => setIsMinesweeperMinimized(false)}
+            >
+              <Image
+                src="/minesweeper.png"
+                alt="Minesweeper"
+                width={16}
+                height={16}
+                className="mr-1"
+              />
+              Minesweeper
             </button>
           )}
         </div>
