@@ -144,7 +144,7 @@ export default function Home() {
 
       <main className="win98-window max-w-2xl mx-auto">
         <div className="win98-title-bar">
-          <span>XRPOnline - Your Gateway to Digital Assets</span>
+          <span>XRPOnline - Your Gateway to Digital Degeneracy</span>
           <div className="flex gap-1">
             <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">_</button>
             <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">□</button>
@@ -159,7 +159,7 @@ export default function Home() {
               <h2 className="text-center font-bold mb-4 text-[#1f3973]">TODAY&apos;S FEATURES</h2>
               <ol className="list-inside list-decimal text-sm space-y-4">
                 <li className="mb-2">
-                  Access your digital wallet through{" "}
+                  Access chat and other utilities through{" "}
                   <code className="bg-[#ffffff] px-1 py-0.5 border border-[#808080]">
                     xrponline.chat
                   </code>
