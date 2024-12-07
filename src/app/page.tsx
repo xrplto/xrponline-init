@@ -1,8 +1,15 @@
+'use client';
+
 import Image from "next/image";
 import "./win98.css";
 import Link from "next/link";
+import Markets from './components/Markets';
+import ChatInterface from './chat/components/ChatInterface';
+import { useState } from 'react';
 
 export default function Home() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   return (
     <div className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <div className="text-white text-center mb-8 text-2xl font-bold">
@@ -29,23 +36,12 @@ export default function Home() {
                 <li className="mb-2">
                   Access your digital wallet through{" "}
                   <code className="bg-[#ffffff] px-1 py-0.5 border border-[#808080]">
-                    wallet.xrp-online.com
+                    xrponline.chat
                   </code>
                 </li>
                 <li>Track real-time XRP prices and market updates</li>
                 <li>Connect with the XRP community in our chat rooms</li>
               </ol>
-            </div>
-
-            <div className="flex gap-4 flex-col sm:flex-row">
-              <button className="aol-button">
-                <div className="flex items-center gap-2">
-                  Launch Wallet
-                </div>
-              </button>
-              <button className="aol-button">
-                Trading Room
-              </button>
             </div>
           </div>
         </div>
@@ -56,28 +52,31 @@ export default function Home() {
           <span>Quick Navigation</span>
         </div>
         <div className="p-4 flex gap-6 flex-wrap justify-center bg-[#f0f0f0]">
-          <button className="aol-button flex items-center gap-2">
-            <Image
-              src="/file.svg"
-              alt="File icon"
-              width={16}
-              height={16}
-              className="invert"
-            />
-            Markets
-          </button>
-          <Link href="/chat">
+          <Link href="/markets">
             <button className="aol-button flex items-center gap-2">
               <Image
-                src="/window.svg"
-                alt="Window icon"
+                src="/file.svg"
+                alt="File icon"
                 width={16}
                 height={16}
                 className="invert"
               />
-              Chat Rooms
+              Markets
             </button>
           </Link>
+          <button 
+            className="aol-button flex items-center gap-2"
+            onClick={() => setIsChatOpen(true)}
+          >
+            <Image
+              src="/window.svg"
+              alt="Window icon"
+              width={16}
+              height={16}
+              className="invert"
+            />
+            Chat Rooms
+          </button>
           <button className="aol-button flex items-center gap-2">
             <Image
               src="/globe.svg"
@@ -90,6 +89,23 @@ export default function Home() {
           </button>
         </div>
       </footer>
+
+      {isChatOpen && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsChatOpen(false);
+            }
+          }}
+        >
+          <div className="relative w-[95%] max-w-4xl" onClick={e => e.stopPropagation()}>
+            <ChatInterface 
+              onClose={() => setIsChatOpen(false)} 
+            />
+          </div>
+        </div>
+      )}
 
       <div className="text-white text-center mt-8 text-sm">
         <div>You&apos;ve Got XRP!</div>
@@ -108,6 +124,8 @@ export default function Home() {
           Start
         </button>
       </div>
+
+      <Markets />
     </div>
   );
 }

@@ -17,7 +17,11 @@ export default function RootLayout({
         fontFamily: "'MS Sans Serif', 'Segoe UI', sans-serif",
         cursor: 'default'
       }}>
-        {children}
+        <main className="min-h-screen w-full flex justify-center p-4">
+          <div className="w-full">
+            {children}
+          </div>
+        </main>
       </body>
     </html>
   );
