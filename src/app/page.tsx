@@ -172,11 +172,11 @@ export default function Home() {
         >
           <div className="w-12 h-12 mb-1">
             <Image
-              src="/globe.svg"
+              src="/help.svg"
               alt="Help Center"
               width={48}
               height={48}
-              className="w-full h-full object-contain invert"
+              className="w-full h-full object-contain"
             />
           </div>
           <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
@@ -190,11 +190,11 @@ export default function Home() {
         >
           <div className="w-12 h-12 mb-1">
             <Image
-              src="/ie.png"
+              src="/globe.svg"
               alt="Internet Explorer"
               width={48}
               height={48}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain invert"
             />
           </div>
           <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
@@ -642,14 +642,14 @@ export default function Home() {
               {!isMaximized && (
                 <div
                   className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-                  onMouseDown={(e) => {
+                  onMouseDown={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     const startX = e.clientX;
                     const startY = e.clientY;
                     const startWidth = parseInt(windowSize.width);
                     const startHeight = parseInt(windowSize.height);
 
-                    const handleMouseMove = (e: MouseEvent) => {
+                    const handleMouseMove = (e: globalThis.MouseEvent) => {
                       const newWidth = startWidth + (e.clientX - startX);
                       const newHeight = startHeight + (e.clientY - startY);
                       setWindowSize({
@@ -659,12 +659,12 @@ export default function Home() {
                     };
 
                     const handleMouseUp = () => {
-                      document.removeEventListener('mousemove', handleMouseMove);
-                      document.removeEventListener('mouseup', handleMouseUp);
+                      window.removeEventListener('mousemove', handleMouseMove);
+                      window.removeEventListener('mouseup', handleMouseUp);
                     };
 
-                    document.addEventListener('mousemove', handleMouseMove);
-                    document.addEventListener('mouseup', handleMouseUp);
+                    window.addEventListener('mousemove', handleMouseMove);
+                    window.addEventListener('mouseup', handleMouseUp);
                   }}
                 >
                   <div className="w-0 h-0 border-8 border-transparent border-r-[#808080] border-b-[#808080] transform rotate-45" />
@@ -726,7 +726,7 @@ export default function Home() {
                   setIsHelpOpen(true);
                 }}
               >
-                <Image src="/globe.svg" alt="Help" width={16} height={16} className="invert" />
+                <Image src="/help.svg" alt="Help" width={16} height={16} className="invert" />
                 Help Center
               </button>
 
@@ -794,7 +794,7 @@ export default function Home() {
               onClick={() => setIsHelpMinimized(false)}
             >
               <Image
-                src="/globe.svg"
+                src="/help.svg"
                 alt="Help"
                 width={16}
                 height={16}
@@ -826,11 +826,11 @@ export default function Home() {
               onClick={() => setIsInternetMinimized(false)}
             >
               <Image
-                src="/ie.png"
+                src="/globe.svg"
                 alt="Internet"
                 width={16}
                 height={16}
-                className="mr-1"
+                className="mr-1 invert"
               />
               Internet Explorer
             </button>
