@@ -15,6 +15,16 @@ interface MarketData {
   unique_sellers: number;
 }
 
+interface Exchange {
+  base_amount: number;
+  counter_amount: number;
+  rate: number;
+  buyer: string;
+  seller: string;
+  executed_time: string;
+  tx_hash: string;
+}
+
 export default function Markets() {
   const [marketData, setMarketData] = useState<MarketData>({
     close: 0,
@@ -30,76 +40,76 @@ export default function Markets() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recentExchanges, setRecentExchanges] = useState<Exchange[]>([]);
 
   useEffect(() => {
-    const fetchMarketData = async () => {
+    const fetchData = async () => {
       try {
-        // Construct the currency identifier - using URL encoding for safety
         const base = encodeURIComponent('r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp_5852504F6E6C696E650000000000000000000000');
         const counter = 'XRP';
 
-        const url = `https://data.xrplf.org/v1/iou/market_data/${base}/${counter}?interval=1d&limit=2&descending=true`;
-        console.log('Fetching from URL:', url);
+        const [marketDataResponse, exchangesResponse] = await Promise.all([
+          fetch(`https://data.xrplf.org/v1/iou/market_data/${base}/${counter}?interval=1d&limit=2&descending=true`),
+          fetch(`https://data.xrplf.org/v1/iou/exchanges/${base}/${counter}?limit=5&descending=true`)
+        ]);
 
-        const response = await fetch(url);
-        console.log('Response status:', response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API Error:', errorText);
-          throw new Error(`Failed to fetch market data: ${response.status} ${errorText}`);
+        if (!marketDataResponse.ok || !exchangesResponse.ok) {
+          throw new Error('Failed to fetch data');
         }
 
-        const data = await response.json();
-        console.log('Received data:', data);
+        const [marketData, exchangesData] = await Promise.all([
+          marketDataResponse.json(),
+          exchangesResponse.json()
+        ]);
 
-        if (!data || data.length === 0) {
-          setError('No market data available');
-          return;
+        if (marketData && marketData.length > 0) {
+          if (marketData.length >= 2) {
+            const current = marketData[0];
+            const previous = marketData[1];
+
+            const change = ((current.close - previous.close) / previous.close) * 100;
+
+            setMarketData({
+              close: current.close,
+              counter_volume: current.counter_volume,
+              change24h: Number(change.toFixed(2)),
+              high: current.high,
+              low: current.low,
+              open: current.open,
+              base_volume: current.base_volume,
+              exchanges: current.exchanges,
+              unique_buyers: current.unique_buyers,
+              unique_sellers: current.unique_sellers
+            });
+          } else {
+            setMarketData({
+              close: marketData[0].close,
+              counter_volume: marketData[0].counter_volume,
+              change24h: 0,
+              high: marketData[0].high,
+              low: marketData[0].low,
+              open: marketData[0].open,
+              base_volume: marketData[0].base_volume,
+              exchanges: marketData[0].exchanges,
+              unique_buyers: marketData[0].unique_buyers,
+              unique_sellers: marketData[0].unique_sellers
+            });
+          }
         }
 
-        if (data.length >= 2) {
-          const current = data[0];
-          const previous = data[1];
-
-          const change = ((current.close - previous.close) / previous.close) * 100;
-
-          setMarketData({
-            close: current.close,
-            counter_volume: current.counter_volume,
-            change24h: Number(change.toFixed(2)),
-            high: current.high,
-            low: current.low,
-            open: current.open,
-            base_volume: current.base_volume,
-            exchanges: current.exchanges,
-            unique_buyers: current.unique_buyers,
-            unique_sellers: current.unique_sellers
-          });
-        } else {
-          setMarketData({
-            close: data[0].close,
-            counter_volume: data[0].counter_volume,
-            change24h: 0,
-            high: data[0].high,
-            low: data[0].low,
-            open: data[0].open,
-            base_volume: data[0].base_volume,
-            exchanges: data[0].exchanges,
-            unique_buyers: data[0].unique_buyers,
-            unique_sellers: data[0].unique_sellers
-          });
+        if (exchangesData && exchangesData.length > 0) {
+          setRecentExchanges(exchangesData);
         }
       } catch (error) {
-        console.error('Error fetching market data:', error);
-        setError(error instanceof Error ? error.message : 'Failed to fetch market data');
+        console.error('Error fetching data:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch data');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchMarketData();
-    const interval = setInterval(fetchMarketData, 5 * 60 * 1000);
+    fetchData();
+    const interval = setInterval(fetchData, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -182,6 +192,52 @@ export default function Markets() {
               <span className="text-right">{marketData.unique_sellers}</span>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="bg-white p-4 border-2 border-[#1f3973]">
+        <h2 className="text-center font-bold mb-4 text-[#1f3973]">RECENT TRADES</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left text-[#1f3973] py-2">Time</th>
+                <th className="text-right text-[#1f3973] py-2">Type</th>
+                <th className="text-right text-[#1f3973] py-2">Price (XRP)</th>
+                <th className="text-right text-[#1f3973] py-2">Amount (XPO)</th>
+                <th className="text-right text-[#1f3973] py-2">Total (XRP)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentExchanges.map((exchange, idx) => (
+                <tr key={`${exchange.tx_hash}-${idx}`} className="border-b border-gray-100">
+                  <td className="py-2">
+                    {new Date(exchange.executed_time).toLocaleTimeString()}
+                  </td>
+                  <td className="text-right py-2">
+                    <span className={`font-semibold ${exchange.seller === 'r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp' ? 'text-green-600' : 'text-red-600'}`}>
+                      {exchange.seller === 'r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp' ? 'BUY' : 'SELL'}
+                    </span>
+                  </td>
+                  <td className="text-right py-2">
+                    {exchange.rate.toFixed(8)}
+                  </td>
+                  <td className="text-right py-2">
+                    {exchange.base_amount.toFixed(2)}
+                  </td>
+                  <td className="text-right py-2">
+                    {exchange.counter_amount.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+              {recentExchanges.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center py-4 text-gray-500">
+                    No recent trades
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
       <div className="text-center text-sm text-gray-600">
