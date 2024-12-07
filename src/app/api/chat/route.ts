@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // Store messages in memory
-let messages: ChatMessage[] = [];
+const messages: ChatMessage[] = [];
 
 interface ChatMessage {
   id?: string;

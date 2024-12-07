@@ -452,7 +452,7 @@ export default function ChatInterface() {
             ).map((message, index) => (
               <div
                 key={index}
-                className={`py-4 px-5 rounded mb-4 max-w-[92%] text-[18px] leading-relaxed ${
+                className={`py-4 px-5 rounded mb-4 max-w-[92%] text-[20px] leading-relaxed ${
                   message.isPrivate
                     ? message.username === username
                       ? 'bg-pink-500 text-white self-end'
@@ -464,7 +464,7 @@ export default function ChatInterface() {
                         : 'bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
                 }`}
               >
-                <div className="text-[16px] font-bold mb-2.5 flex justify-between items-center">
+                <div className="text-[18px] font-bold mb-2.5 flex justify-between items-center">
                   <div>{renderUsername(message, username)}</div>
                   {username === 'XRPOnline' && message.id && (
                     <button
