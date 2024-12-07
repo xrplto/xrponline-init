@@ -4,7 +4,9 @@ import Image from "next/image";
 import "./win98.css";
 import Markets from './components/Markets';
 import ChatInterface from './chat/components/ChatInterface';
-import { useState, MouseEvent } from 'react';
+import { useState, MouseEvent, useEffect } from 'react';
+
+const DEFAULT_BG_COLOR = '#008080';
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -17,6 +19,24 @@ export default function Home() {
   const [isMarketsMinimized, setIsMarketsMinimized] = useState(false);
   const [isHelpMinimized, setIsHelpMinimized] = useState(false);
   const [showConnectionInfo, setShowConnectionInfo] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsMinimized, setIsSettingsMinimized] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BG_COLOR);
+  const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
+
+  // Initialize background color from sessionStorage
+  useEffect(() => {
+    const savedColor = sessionStorage.getItem('desktop-background-color');
+    if (savedColor) {
+      setBackgroundColor(savedColor);
+    }
+  }, []);
+
+  // Update CSS variable and save to sessionStorage when backgroundColor changes
+  useEffect(() => {
+    document.documentElement.style.setProperty('--desktop-bg-color', backgroundColor);
+    sessionStorage.setItem('desktop-background-color', backgroundColor);
+  }, [backgroundColor]);
 
   const handleMouseDown = (e: MouseEvent) => {
     setIsDragging(true);
@@ -40,7 +60,10 @@ export default function Home() {
   };
 
   return (
-    <div className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20">
+    <div 
+      className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20" 
+      style={{ backgroundColor }}
+    >
       <a
         href="https://firstledger.net/token/r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp/5852504F6E6C696E650000000000000000000000#"
         target="_blank"
@@ -139,7 +162,7 @@ export default function Home() {
 
       <div className="text-white text-center mb-8 text-2xl font-bold">
         Welcome to XRPOnline
-        <div className="text-sm dial-up-animation">●●● Connected at 56.6 Kbps ●●●</div>
+        <div className="text-sm dial-up-animation">●● Connected at 56.6 Kbps ●●●</div>
       </div>
 
       <main className="win98-window max-w-2xl mx-auto">
@@ -336,14 +359,94 @@ export default function Home() {
         </div>
       )}
 
+      {isSettingsOpen && !isSettingsMinimized && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsSettingsOpen(false);
+            }
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <div
+            className="relative w-[95%] max-w-md win98-window"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div
+              className="win98-title-bar cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+            >
+              <span>Display Settings</span>
+              <div className="flex gap-1">
+                <button
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsSettingsMinimized(true);
+                  }}
+                >
+                  _
+                </button>
+                <button
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => setIsSettingsOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-4">
+              <div className="bg-white p-4 border-2 border-[#1f3973]">
+                <h2 className="text-center font-bold mb-4 text-[#1f3973]">DISPLAY PROPERTIES</h2>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-bold text-[#1f3973] mb-2">Background Color</h3>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={backgroundColor}
+                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        className="win98-button p-0 h-[30px] w-[50px]"
+                      />
+                      <input
+                        type="text"
+                        value={backgroundColor}
+                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        className="win98-button px-2 h-[25px]"
+                      />
+                    </div>
+                    <div className="mt-2">
+                      <button
+                        className="win98-button px-2 py-1 text-sm"
+                        onClick={() => setBackgroundColor('#008080')}
+                      >
+                        Reset to Default
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="text-white text-center mt-8 text-sm">
         <div>You&apos;ve Got XRP!</div>
         <div>© 1999 XRPOnline - All Rights Reserved</div>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 h-[30px] bg-[#c0c0c0] border-t-[1px] border-white flex items-center justify-between">
-        <div className="flex items-center">
-          <button className="win98-button h-[22px] px-2 mx-1 flex items-center gap-2">
+        <div className="flex items-center relative">
+          <button 
+            className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 ${isStartMenuOpen ? 'active' : ''}`}
+            onClick={() => setIsStartMenuOpen(!isStartMenuOpen)}
+          >
             <Image
               src="/windows98.png"
               alt="Start"
@@ -353,6 +456,68 @@ export default function Home() {
             />
             Start
           </button>
+
+          {isStartMenuOpen && (
+            <div 
+              className="absolute bottom-full left-1 mb-1 w-[200px] bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] z-50"
+              onClick={() => setIsStartMenuOpen(false)}
+            >
+              <div className="bg-[#000080] absolute left-0 top-0 bottom-0 w-[20px]"></div>
+              
+              <button 
+                className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
+                onClick={() => {
+                  setIsChatOpen(true);
+                }}
+              >
+                <Image src="/window.svg" alt="Chat" width={16} height={16} className="invert" />
+                Chat Rooms
+              </button>
+
+              <button 
+                className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
+                onClick={() => {
+                  setIsMarketsOpen(true);
+                }}
+              >
+                <Image src="/file.svg" alt="Markets" width={16} height={16} className="invert" />
+                Markets
+              </button>
+
+              <button 
+                className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
+                onClick={() => {
+                  setIsHelpOpen(true);
+                }}
+              >
+                <Image src="/globe.svg" alt="Help" width={16} height={16} className="invert" />
+                Help Center
+              </button>
+
+              <div className="border-t border-[#808080] my-1"></div>
+
+              <button 
+                className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
+                onClick={() => {
+                  setIsSettingsOpen(true);
+                }}
+              >
+                <Image src="/settings.svg" alt="Settings" width={16} height={16} className="invert" />
+                Display Settings
+              </button>
+
+              <button 
+                className="w-full px-4 py-1 pl-8 text-left hover:bg-[#000080] hover:text-white flex items-center gap-2"
+                onClick={() => {
+                  setShowConnectionInfo(true);
+                }}
+              >
+                <div className="w-4 h-4 flex items-center justify-center">⚡</div>
+                Connection Info
+              </button>
+            </div>
+          )}
+
           <div className="h-[22px] mx-1 border-l-2 border-[#808080] border-r-2 border-white"></div>
 
           {isChatOpen && (
@@ -402,10 +567,26 @@ export default function Home() {
               Help Center
             </button>
           )}
+
+          {isSettingsOpen && (
+            <button
+              className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 min-w-[120px] ${isSettingsMinimized ? 'active' : ''}`}
+              onClick={() => setIsSettingsMinimized(false)}
+            >
+              <Image
+                src="/settings.svg"
+                alt="Settings"
+                width={16}
+                height={16}
+                className="mr-1"
+              />
+              Display Settings
+            </button>
+          )}
         </div>
-        
+
         <div className="flex items-center mr-2">
-          <div 
+          <div
             className="win98-button h-[22px] px-2 flex items-center gap-2 cursor-pointer"
             onClick={() => setShowConnectionInfo(true)}
           >
@@ -422,17 +603,17 @@ export default function Home() {
       </div>
 
       {showConnectionInfo && (
-        <div 
+        <div
           className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
           onClick={() => setShowConnectionInfo(false)}
         >
-          <div 
+          <div
             className="win98-window w-[400px]"
             onClick={e => e.stopPropagation()}
           >
             <div className="win98-title-bar">
               <span>Connection Status</span>
-              <button 
+              <button
                 className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
                 onClick={() => setShowConnectionInfo(false)}
               >
