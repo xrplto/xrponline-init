@@ -8,6 +8,8 @@ interface ChatMessage {
   text: string;
   username: string;
   timestamp: number;
+  ogImage?: string;
+  ogTitle?: string;
 }
 
 interface OnlineUser {
@@ -42,29 +44,42 @@ interface TenorResult {
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-const renderMessageWithLinks = (text: string) => {
+const renderMessageWithLinks = (message: ChatMessage) => {
+  const { text, ogImage, ogTitle } = message;
+  
   const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
   if (gifMatch) {
     return <img src={gifMatch[1]} alt="GIF" className="max-w-[200px] rounded" />;
   }
 
   const parts = text.split(urlRegex);
-  return parts.map((part, i) => {
-    if (part.match(urlRegex)) {
-      return (
-        <a
-          key={i}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:underline break-all"
-        >
-          {part}
-        </a>
-      );
-    }
-    return part;
-  });
+  return (
+    <div>
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          return (
+            <div key={i} className="link-preview">
+              <a
+                href={part}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline break-all"
+              >
+                {part}
+              </a>
+              {ogImage && (
+                <div className="mt-2 link-preview-card border rounded overflow-hidden max-w-[80px]">
+                  <img src={ogImage} alt={ogTitle || 'Link preview'} className="w-full h-auto" />
+                  {ogTitle && <div className="p-1 text-[10px] font-medium truncate">{ogTitle}</div>}
+                </div>
+              )}
+            </div>
+          );
+        }
+        return part;
+      })}
+    </div>
+  );
 };
 
 export default function ChatInterface() {
@@ -146,10 +161,29 @@ export default function ChatInterface() {
 
   const handleSend = async () => {
     if (inputMessage.trim()) {
+      const urls = inputMessage.match(urlRegex);
+      let ogData = {};
+      
+      if (urls) {
+        try {
+          const response = await fetch('/api/og', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: urls[0] }),
+          });
+          ogData = await response.json();
+        } catch (error) {
+          console.error('Failed to fetch OG data:', error);
+        }
+      }
+
       const newMessage: ChatMessage = {
         text: inputMessage,
         username: username,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        ...ogData
       };
 
       try {
@@ -288,7 +322,7 @@ export default function ChatInterface() {
               <div className="text-xs mb-1 font-bold">
                 {message.username === username ? 'You' : message.username}
               </div>
-              <p>{renderMessageWithLinks(message.text)}</p>
+              {renderMessageWithLinks(message)}
             </div>
           ))}
         </div>
