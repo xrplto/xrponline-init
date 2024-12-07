@@ -535,8 +535,8 @@ export default function Home() {
           <div
             className="relative win98-window"
             style={{
-              width: isMaximized ? '100%' : windowSize.width,
-              height: isMaximized ? '100%' : 'auto',
+              width: isMaximized ? '100%' : '80%',
+              height: isMaximized ? '100%' : '80vh',
               transform: isMaximized ? 'none' : `translate(${position.x}px, ${position.y}px)`,
               cursor: isDragging ? 'grabbing' : 'auto',
               transition: 'all 0.2s ease'
@@ -581,7 +581,7 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff]">
+            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] h-full flex flex-col">
               <div className="flex items-center gap-2 p-1 border-b border-[#808080]">
                 <button className="win98-button px-2 py-1">File</button>
                 <button className="win98-button px-2 py-1">Edit</button>
@@ -664,9 +664,9 @@ export default function Home() {
                 </button>
               </div>
               <div
-                className="bg-white p-4 overflow-auto"
+                className="bg-white flex-1 overflow-auto"
                 style={{
-                  height: isMaximized ? 'calc(100vh - 140px)' : windowSize.height
+                  height: isMaximized ? 'calc(100vh - 140px)' : 'calc(80vh - 140px)'
                 }}
               >
                 {isLoading ? (
