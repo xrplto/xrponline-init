@@ -391,16 +391,18 @@ export default function ChatInterface() {
             <div className="flex flex-wrap md:block">
               {onlineUsers.map((user) => {
                 const status = getUserStatus(user.lastSeen);
+                const isCurrentUser = user.username === username;
                 return (
                   <div
                     key={user.username}
-                    className={`text-[10px] py-1 px-2 mb-1 bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
-                      selectedUser === user.username ? 'bg-[#000080] text-white' : ''
+                    className={`text-[10px] py-1 px-2 mb-1 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
+                      selectedUser === user.username ? 'bg-[#000080] text-white' : 
+                      isCurrentUser ? 'bg-[#008000] text-white' : 'bg-[#c0c0c0]'
                     }`}
-                    onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
+                    onClick={() => !isCurrentUser && setSelectedUser(user.username === selectedUser ? null : user.username)}
                   >
                     <div className="flex items-center gap-1">
-                      <span>{user.username}</span>
+                      <span>{user.username}{isCurrentUser ? ' (You)' : ''}</span>
                       <span className="flex items-center">
                         <span className={`w-1.5 h-1.5 rounded-full ${
                           status === 'online' ? 'bg-green-500' :
