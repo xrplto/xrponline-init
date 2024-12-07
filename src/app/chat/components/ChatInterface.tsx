@@ -6,6 +6,7 @@ import Picker from '@emoji-mart/react'
 import UsernamePrompt from './UsernamePrompt';
 
 interface ChatMessage {
+  id?: string;
   text: string;
   username: string;
   timestamp: number;
@@ -413,6 +414,20 @@ export default function ChatInterface() {
     loadClickCounts();
   }, [messages]); // Only run when messages change
 
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      await fetch(`/api/chat?id=${messageId}`, {
+        method: 'DELETE',
+      });
+      // Remove message from local state
+      setMessages(prevMessages => 
+        prevMessages.filter(message => message.id !== messageId)
+      );
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+    }
+  };
+
   if (!isUsernameSet) {
     return (
       <UsernamePrompt
@@ -449,8 +464,17 @@ export default function ChatInterface() {
                         : 'bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
                 }`}
               >
-                <div className="text-[16px] font-bold mb-2.5">
-                  {renderUsername(message, username)}
+                <div className="text-[16px] font-bold mb-2.5 flex justify-between items-center">
+                  <div>{renderUsername(message, username)}</div>
+                  {username === 'XRPOnline' && message.id && (
+                    <button
+                      onClick={() => handleDeleteMessage(message.id!)}
+                      className="text-xs hover:text-red-500 transition-colors"
+                      title="Delete message"
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
                 <div className="break-words">
                   {renderMessageWithLinks(message)}
