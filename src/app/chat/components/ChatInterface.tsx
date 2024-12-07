@@ -347,10 +347,10 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="flex flex-col space-y-4 p-4">
-      <div className="flex gap-4">
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-col md:flex-row gap-4 p-4 overflow-hidden" style={{ height: 'calc(100vh - 140px)' }}>
         {/* Chat messages */}
-        <div className="flex-1 flex flex-col space-y-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[600px] overflow-y-auto">
+        <div className="flex-1 flex flex-col space-y-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 overflow-y-auto">
           {messages.filter(message => 
             !message.isPrivate || 
             message.username === username || 
@@ -377,120 +377,134 @@ export default function ChatInterface() {
         </div>
 
         {/* Online Users */}
-        <div className="w-56 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[600px] overflow-y-auto">
-          <div className="font-bold mb-2">Online Users</div>
-          {onlineUsers.map((user) => {
-            const status = getUserStatus(user.lastSeen);
-            return (
-              <div
-                key={user.username}
-                className={`text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer ${
-                  selectedUser === user.username ? 'bg-[#000080] text-white' : ''
-                }`}
-                onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
-              >
-                <div className="flex items-center justify-between">
-                  <span>{user.username}</span>
-                  <span className="flex items-center">
-                    <span className={`w-2 h-2 rounded-full mr-1 ${
-                      status === 'online' ? 'bg-green-500' : 
-                      status === 'inactive' ? 'bg-yellow-500' : 
-                      'bg-gray-500'
-                    }`} />
-                    <span className="text-xs opacity-75">
-                      {status === 'online' ? 'online' : 
-                       status === 'inactive' ? 'inactive' : 
-                       'offline'}
+        <div className="w-full md:w-56 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[120px] md:h-auto overflow-y-auto shrink-0">
+          <div className="font-bold mb-2 text-sm">Online Users</div>
+          <div className="flex flex-wrap gap-1 md:block">
+            {onlineUsers.map((user) => {
+              const status = getUserStatus(user.lastSeen);
+              return (
+                <div
+                  key={user.username}
+                  className={`text-xs md:text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer ${
+                    selectedUser === user.username ? 'bg-[#000080] text-white' : ''
+                  }`}
+                  onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
+                >
+                  <div className="flex items-center gap-1">
+                    <span>{user.username}</span>
+                    <span className="flex items-center">
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        status === 'online' ? 'bg-green-500' : 
+                        status === 'inactive' ? 'bg-yellow-500' : 
+                        'bg-gray-500'
+                      }`} />
+                      <span className="text-xs opacity-75 hidden md:inline-block ml-1">
+                        {status === 'online' ? 'online' : 
+                         status === 'inactive' ? 'inactive' : 
+                         'offline'}
+                      </span>
                     </span>
-                  </span>
+                    {selectedUser === user.username && ' (DM)'}
+                  </div>
                 </div>
-                {selectedUser === user.username && ' (DM)'}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Chat input with selected user indicator */}
-      <div className="mt-4 flex gap-2 relative">
-        {selectedUser && (
-          <div className="absolute -top-6 left-0 text-sm text-gray-600">
-            Messaging {selectedUser} privately
-            <button 
-              onClick={() => setSelectedUser(null)}
-              className="ml-2 text-xs text-red-500 hover:text-red-700"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type your message..."
-          className="flex-1 p-3 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
-        />
-        <button
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="emoji-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
-        >
-          😊
-        </button>
-        <button
-          onClick={() => setShowGifPicker(!showGifPicker)}
-          className="gif-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
-        >
-          GIF
-        </button>
-        {showGifPicker && (
-          <div className="gif-picker-container absolute bottom-full right-0 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 w-[320px]">
+      {/* Chat input section - Fixed at bottom */}
+      <div className="p-4 pt-0 bg-white">
+        <div className="flex flex-col gap-2 relative">
+          {selectedUser && (
+            <div className="text-sm text-gray-600">
+              Messaging {selectedUser} privately
+              <button 
+                onClick={() => setSelectedUser(null)}
+                className="ml-2 text-xs text-red-500 hover:text-red-700"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          
+          {/* Message input */}
+          <div className="flex flex-wrap gap-2">
             <input
               type="text"
-              value={gifSearchTerm}
-              onChange={(e) => {
-                setGifSearchTerm(e.target.value);
-                searchGifs(e.target.value);
-              }}
-              placeholder="Search GIFs..."
-              className="w-full p-2 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              className="flex-1 min-w-[200px] p-3 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
             />
-            <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
-              {gifResults.map((gif, index) => (
-                <img
-                  key={index}
-                  src={gif.preview}
-                  alt="GIF"
-                  className="w-full cursor-pointer hover:opacity-80"
-                  onClick={() => handleGifSelect(gif.url)}
-                />
-              ))}
+            
+            {/* Button group */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="emoji-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+              >
+                😊
+              </button>
+              <button
+                onClick={() => setShowGifPicker(!showGifPicker)}
+                className="gif-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+              >
+                GIF
+              </button>
+              <button
+                onClick={handleSend}
+                className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+              >
+                Send
+              </button>
+              <button
+                onClick={clearChat}
+                className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+              >
+                Clear
+              </button>
             </div>
           </div>
-        )}
-        <button
-          onClick={handleSend}
-          className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
-        >
-          Send
-        </button>
-        <button
-          onClick={clearChat}
-          className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
-        >
-          Clear
-        </button>
-        {showEmojiPicker && (
-          <div className="emoji-picker-container absolute bottom-full right-0 mb-2">
-            <Picker
-              data={data}
-              onEmojiSelect={onEmojiClick}
-              theme="light"
-              set="native"
-            />
-          </div>
-        )}
+
+          {showEmojiPicker && (
+            <div className="emoji-picker-container absolute bottom-full right-0 mb-2">
+              <Picker
+                data={data}
+                onEmojiSelect={onEmojiClick}
+                theme="light"
+                set="native"
+              />
+            </div>
+          )}
+          
+          {showGifPicker && (
+            <div className="gif-picker-container absolute bottom-full right-0 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 w-[320px] max-w-full">
+              <input
+                type="text"
+                value={gifSearchTerm}
+                onChange={(e) => {
+                  setGifSearchTerm(e.target.value);
+                  searchGifs(e.target.value);
+                }}
+                placeholder="Search GIFs..."
+                className="w-full p-2 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
+              />
+              <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto">
+                {gifResults.map((gif, index) => (
+                  <img
+                    key={index}
+                    src={gif.preview}
+                    alt="GIF"
+                    className="w-full cursor-pointer hover:opacity-80"
+                    onClick={() => handleGifSelect(gif.url)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
