@@ -218,7 +218,7 @@ export default function Home() {
         >
           <div className="w-12 h-12 mb-1">
             <Image
-              src="/minesweeper.png"
+              src="/minesweeper.svg"
               alt="Minesweeper"
               width={48}
               height={48}
@@ -901,7 +901,7 @@ export default function Home() {
               onClick={() => setIsMinesweeperMinimized(false)}
             >
               <Image
-                src="/minesweeper.png"
+                src="/minesweeper.svg"
                 alt="Minesweeper"
                 width={16}
                 height={16}

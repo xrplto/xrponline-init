@@ -1,0 +1,13 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mine circle -->
+  <circle cx="24" cy="24" r="12" fill="#808080"/>
+  
+  <!-- Spikes -->
+  <line x1="24" y1="8" x2="24" y2="40" stroke="#808080" stroke-width="4"/>
+  <line x1="8" y1="24" x2="40" y2="24" stroke="#808080" stroke-width="4"/>
+  <line x1="13.7" y1="13.7" x2="34.3" y2="34.3" stroke="#808080" stroke-width="4"/>
+  <line x1="13.7" y1="34.3" x2="34.3" y2="13.7" stroke="#808080" stroke-width="4"/>
+  
+  <!-- Shine highlight -->
+  <circle cx="20" cy="20" r="3" fill="#DFDFDF"/>
+</svg> 
