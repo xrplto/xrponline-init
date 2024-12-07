@@ -323,7 +323,7 @@ export default function ChatInterface() {
     <div className="flex flex-col space-y-4 p-4">
       <div className="flex gap-4">
         {/* Chat messages */}
-        <div className="flex-1 flex flex-col space-y-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[400px] overflow-y-auto">
+        <div className="flex-1 flex flex-col space-y-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[600px] overflow-y-auto">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -342,7 +342,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Online Users */}
-        <div className="w-56 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[400px] overflow-y-auto">
+        <div className="w-56 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[600px] overflow-y-auto">
           <div className="font-bold mb-2">Online Users</div>
           {onlineUsers.map((user) => (
             <div
@@ -363,7 +363,7 @@ export default function ChatInterface() {
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Type your message..."
-          className="flex-1 p-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
+          className="flex-1 p-3 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
         />
         <button
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
