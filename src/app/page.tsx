@@ -57,6 +57,26 @@ export default function Home() {
         </span>
       </a>
 
+      <a 
+        href="https://x.com/xrponlinecto"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-4 left-28 flex flex-col items-center w-20 group hover:cursor-pointer"
+      >
+        <div className="w-12 h-12 mb-1">
+          <Image
+            src="/xlogo.png"
+            alt="X (Twitter)"
+            width={48}
+            height={48}
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
+          X (Twitter)
+        </span>
+      </a>
+
       <div className="text-white text-center mb-8 text-2xl font-bold">
         Welcome to XRPOnline
         <div className="text-sm dial-up-animation">●●● Connected at 56.6 Kbps ●●●</div>
