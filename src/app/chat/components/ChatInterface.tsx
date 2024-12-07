@@ -110,6 +110,16 @@ const renderMessageWithLinks = (message: ChatMessage) => {
   );
 };
 
+const getUserStatus = (lastSeen: number): 'online' | 'inactive' | 'offline' => {
+  const timeDiff = Date.now() - lastSeen;
+  if (timeDiff < 10000) { // Within 10 seconds
+    return 'online';
+  } else if (timeDiff < 60000) { // Within 1 minute
+    return 'inactive';
+  }
+  return 'offline';
+};
+
 export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -369,18 +379,35 @@ export default function ChatInterface() {
         {/* Online Users */}
         <div className="w-56 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[600px] overflow-y-auto">
           <div className="font-bold mb-2">Online Users</div>
-          {onlineUsers.map((user) => (
-            <div
-              key={user.username}
-              className={`text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer ${
-                selectedUser === user.username ? 'bg-[#000080] text-white' : ''
-              }`}
-              onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
-            >
-              {user.username}
-              {selectedUser === user.username && ' (DM)'}
-            </div>
-          ))}
+          {onlineUsers.map((user) => {
+            const status = getUserStatus(user.lastSeen);
+            return (
+              <div
+                key={user.username}
+                className={`text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer ${
+                  selectedUser === user.username ? 'bg-[#000080] text-white' : ''
+                }`}
+                onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{user.username}</span>
+                  <span className="flex items-center">
+                    <span className={`w-2 h-2 rounded-full mr-1 ${
+                      status === 'online' ? 'bg-green-500' : 
+                      status === 'inactive' ? 'bg-yellow-500' : 
+                      'bg-gray-500'
+                    }`} />
+                    <span className="text-xs opacity-75">
+                      {status === 'online' ? 'online' : 
+                       status === 'inactive' ? 'inactive' : 
+                       'offline'}
+                    </span>
+                  </span>
+                </div>
+                {selectedUser === user.username && ' (DM)'}
+              </div>
+            );
+          })}
         </div>
       </div>
 
