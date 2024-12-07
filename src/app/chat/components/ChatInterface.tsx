@@ -105,7 +105,7 @@ export default function ChatInterface() {
 
     const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
     if (gifMatch) {
-      return <img src={gifMatch[1]} alt="GIF" className="max-w-[100px] max-h-[100px] rounded object-contain" />;
+      return <img src={gifMatch[1]} alt="GIF" className="max-w-[200px] max-h-[200px] rounded object-contain" />;
     }
 
     const handleRaidClick = async (url: string) => {
