@@ -45,6 +45,12 @@ interface TenorResult {
   };
 }
 
+interface ClickCounts {
+  [url: string]: number;
+}
+
+type UserStatus = 'online' | 'inactive' | 'offline';
+
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
 const isXLink = (url: string): boolean => {
@@ -70,58 +76,7 @@ const renderUsername = (message: ChatMessage, currentUser: string) => {
   );
 };
 
-const renderMessageWithLinks = (message: ChatMessage) => {
-  const { text, ogImage, ogTitle, isPrivate } = message;
-
-  const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
-  if (gifMatch) {
-    return <img src={gifMatch[1]} alt="GIF" className="max-w-[100px] max-h-[100px] rounded object-contain" />;
-  }
-
-  const parts = text.split(urlRegex);
-  return (
-    <div>
-      {isPrivate && (
-        <span className="text-xs italic mr-2">[Private] </span>
-      )}
-      {parts.map((part, i) => {
-        if (part.match(urlRegex)) {
-          return (
-            <div key={i} className="link-preview">
-              <div className="flex items-center gap-2">
-                <a
-                  href={part}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline break-all"
-                >
-                  {part}
-                </a>
-                {isXLink(part) && (
-                  <button
-                    onClick={() => window.open(part, '_blank')}
-                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                  >
-                    Raid 🚀
-                  </button>
-                )}
-              </div>
-              {ogImage && (
-                <div className="mt-2 link-preview-card border rounded overflow-hidden max-w-[80px]">
-                  <img src={ogImage} alt={ogTitle || 'Link preview'} className="w-full h-auto" />
-                  {ogTitle && <div className="p-1 text-[10px] font-medium truncate">{ogTitle}</div>}
-                </div>
-              )}
-            </div>
-          );
-        }
-        return part;
-      })}
-    </div>
-  );
-};
-
-const getUserStatus = (lastSeen: number): 'online' | 'inactive' | 'offline' => {
+const getUserStatus = (lastSeen: number): UserStatus => {
   const timeDiff = Date.now() - lastSeen;
   if (timeDiff < 10000) { // Within 10 seconds
     return 'online';
@@ -142,6 +97,81 @@ export default function ChatInterface() {
   const [gifResults, setGifResults] = useState<GifResult[]>([]);
   const [gifSearchTerm, setGifSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [clickCounts, setClickCounts] = useState<ClickCounts>({});
+
+  const renderMessageWithLinks = (message: ChatMessage) => {
+    const { text, ogImage, ogTitle, isPrivate } = message;
+
+    const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
+    if (gifMatch) {
+      return <img src={gifMatch[1]} alt="GIF" className="max-w-[100px] max-h-[100px] rounded object-contain" />;
+    }
+
+    const handleRaidClick = async (url: string) => {
+      try {
+        const response = await fetch('/api/clicks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url }),
+        });
+        const data = await response.json();
+        
+        setClickCounts(prev => ({
+          ...prev,
+          [url]: data.count
+        }));
+        
+        window.open(url, '_blank');
+      } catch (error) {
+        console.error('Failed to track click:', error);
+        window.open(url, '_blank');
+      }
+    };
+
+    const parts = text.split(urlRegex);
+    return (
+      <div>
+        {isPrivate && (
+          <span className="text-xs italic mr-2">[Private] </span>
+        )}
+        {parts.map((part, i) => {
+          if (part.match(urlRegex)) {
+            return (
+              <div key={i} className="link-preview">
+                <div className="flex items-center gap-2">
+                  <a
+                    href={part}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline break-all"
+                  >
+                    {part}
+                  </a>
+                  {isXLink(part) && (
+                    <button
+                      onClick={() => handleRaidClick(part)}
+                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                    >
+                      Raid 🚀 {clickCounts[part] ? `(${clickCounts[part]})` : ''}
+                    </button>
+                  )}
+                </div>
+                {ogImage && (
+                  <div className="mt-2 link-preview-card border rounded overflow-hidden max-w-[80px]">
+                    <img src={ogImage} alt={ogTitle || 'Link preview'} className="w-full h-auto" />
+                    {ogTitle && <div className="p-1 text-[10px] font-medium truncate">{ogTitle}</div>}
+                  </div>
+                )}
+              </div>
+            );
+          }
+          return part;
+        })}
+      </div>
+    );
+  };
 
   // Replace SSE with polling
   useEffect(() => {
@@ -336,6 +366,30 @@ export default function ChatInterface() {
       console.error('Failed to send GIF:', error);
     }
   };
+
+  useEffect(() => {
+    const loadClickCounts = async () => {
+      const urls = messages
+        .map(msg => msg.text.match(urlRegex))
+        .flat()
+        .filter((url): url is string => url !== null && isXLink(url));
+        
+      for (const url of urls) {
+        try {
+          const response = await fetch(`/api/clicks?url=${encodeURIComponent(url)}`);
+          const data = await response.json();
+          setClickCounts(prev => ({
+            ...prev,
+            [url]: data.count
+          }));
+        } catch (error) {
+          console.error('Failed to load click count:', error);
+        }
+      }
+    };
+
+    loadClickCounts();
+  }, [messages]);
 
   if (!isUsernameSet) {
     return (
