@@ -53,7 +53,7 @@ const renderMessageWithLinks = (message: ChatMessage) => {
   
   const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
   if (gifMatch) {
-    return <img src={gifMatch[1]} alt="GIF" className="max-w-[200px] rounded" />;
+    return <img src={gifMatch[1]} alt="GIF" className="max-w-[100px] max-h-[100px] rounded object-contain" />;
   }
 
   const parts = text.split(urlRegex);
