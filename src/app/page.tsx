@@ -334,7 +334,7 @@ export default function Home() {
       <div className="fixed bottom-0 left-0 right-0 h-[30px] bg-[#c0c0c0] border-t-[1px] border-white flex items-center">
         <button className="win98-button h-[22px] px-2 mx-1 flex items-center gap-2">
           <Image
-            src="/windows-logo.png"
+            src="/windows98.png"
             alt="Start"
             width={16}
             height={16}
