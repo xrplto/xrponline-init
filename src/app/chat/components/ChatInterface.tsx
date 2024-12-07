@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
+import UsernamePrompt from './UsernamePrompt';
 
 interface ChatMessage {
   text: string;
@@ -328,24 +329,11 @@ export default function ChatInterface() {
 
   if (!isUsernameSet) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <form onSubmit={handleUsernameSubmit} className="flex flex-col gap-4 w-full max-w-sm">
-          <div className="text-center font-bold">Enter your username to join the chat</div>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
-            className="p-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
-          />
-          <button
-            type="submit"
-            className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a]"
-          >
-            Join Chat
-          </button>
-        </form>
-      </div>
+      <UsernamePrompt
+        username={username}
+        setUsername={setUsername}
+        handleUsernameSubmit={handleUsernameSubmit}
+      />
     );
   }
 
