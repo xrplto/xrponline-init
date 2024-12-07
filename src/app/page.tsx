@@ -403,19 +403,35 @@ export default function Home() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-bold text-[#1f3973]">What is XRPOnline?</h3>
-                    <p className="text-sm mt-1">XRPOnline is your retro-styled gateway to the world of digital assets, specifically focused on XRP.</p>
+                    <p className="text-sm mt-1">XRPOnline is a full-fledged operating system built on Next.js and the first world computer on the XRP Ledger (like Ethereum but better).</p>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#1f3973]">Why did the previous XRPOnline developer rugged?</h3>
+                    <p className="text-sm mt-1">I don&apos;t know I was the person named Brad Garlinghouse spamming in the chat. I was having fun so I decided to CTO the project.</p>
+                    <p className="text-sm mt-1">It seems like he sold his 6% allocation and proceeded to rug the project.</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">How do I use the Chat Rooms?</h3>
-                    <p className="text-sm mt-1">Click on the &quot;Chat Rooms&quot; button to join discussions with other XRP enthusiasts. You can participate in various topic-specific rooms.</p>
+                    <p className="text-sm mt-1">Click on the &quot;Chat Rooms&quot; button to join discussions with other XRP enthusiasts. We encourage free speech and open expression in our chat rooms.</p>
+                    <p className="text-sm mt-1">Please note: While we support free expression, users must comply with their local laws and regulations. Do not post any content that violates the laws in your jurisdiction.</p>
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#1f3973]">How do I track XRP prices?</h3>
-                    <p className="text-sm mt-1">Use our &quot;Markets&quot; feature to view real-time XRP price updates and market information.</p>
+                    <h3 className="font-bold text-[#1f3973]">How can I buy XRPOnline?</h3>
+                    <p className="text-sm mt-1">You can buy XRPOnline on any of these XRP Ledger DEXs:</p>
+                    <ul className="text-sm mt-1 list-disc pl-4">
+                      <li><a href="https://firstledger.net/token/r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp/5852504F6E6C696E650000000000000000000000" 
+                             target="_blank" 
+                             rel="noopener noreferrer"
+                             className="text-blue-600 hover:underline">FirstLedger</a></li>
+                      <li>XMagnetic</li>
+                      <li>XPMarket</li>
+                      <li>Sologenic</li>
+                    </ul>
+                    <p className="text-sm mt-1">These are all decentralized exchanges (DEXs) built on the XRP Ledger.</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">Need more help?</h3>
-                    <p className="text-sm mt-1">Contact our support team at support@xrponline.com</p>
+                    <p className="text-sm mt-1">Join our chat we&apos;re almost always online</p>
                   </div>
                 </div>
               </div>
