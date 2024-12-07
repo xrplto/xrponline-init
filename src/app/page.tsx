@@ -228,7 +228,7 @@ export default function Home() {
                 ×
               </button>
             </div>
-            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-1">
+            <div className="w-full bg-white border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-4">
               <Markets />
             </div>
           </div>
@@ -276,11 +276,11 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">How do I use the Chat Rooms?</h3>
-                    <p className="text-sm mt-1">Click on the "Chat Rooms" button to join discussions with other XRP enthusiasts. You can participate in various topic-specific rooms.</p>
+                    <p className="text-sm mt-1">Click on the &quot;Chat Rooms&quot; button to join discussions with other XRP enthusiasts. You can participate in various topic-specific rooms.</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">How do I track XRP prices?</h3>
-                    <p className="text-sm mt-1">Use our "Markets" feature to view real-time XRP price updates and market information.</p>
+                    <p className="text-sm mt-1">Use our &quot;Markets&quot; feature to view real-time XRP price updates and market information.</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">Need more help?</h3>

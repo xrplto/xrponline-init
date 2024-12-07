@@ -24,7 +24,27 @@ interface EmojiMartData {
   shortcodes: string;
 }
 
+const urlRegex = /(https?:\/\/[^\s]+)/g;
 
+const renderMessageWithLinks = (text: string) => {
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline break-all"
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+};
 
 export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState('');
@@ -190,15 +210,16 @@ export default function ChatInterface() {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`p-2 rounded-none max-w-[80%] ${message.username === username
-                ? 'bg-[#000080] text-white self-end'
-                : 'bg-[#c0c0c0] border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
-                }`}
+              className={`p-2 rounded-none max-w-[80%] ${
+                message.username === username
+                  ? 'bg-[#000080] text-white self-end'
+                  : 'bg-[#c0c0c0] border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
+              }`}
             >
               <div className="text-xs mb-1 font-bold">
                 {message.username === username ? 'You' : message.username}
               </div>
-              <p>{message.text}</p>
+              <p>{renderMessageWithLinks(message.text)}</p>
             </div>
           ))}
         </div>
