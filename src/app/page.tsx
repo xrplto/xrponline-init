@@ -2,13 +2,37 @@
 
 import Image from "next/image";
 import "./win98.css";
-import Link from "next/link";
 import Markets from './components/Markets';
 import ChatInterface from './chat/components/ChatInterface';
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMarketsOpen, setIsMarketsOpen] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isDragging) {
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
   return (
     <div className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -52,18 +76,19 @@ export default function Home() {
           <span>Quick Navigation</span>
         </div>
         <div className="p-4 flex gap-6 flex-wrap justify-center bg-[#f0f0f0]">
-          <Link href="/markets">
-            <button className="aol-button flex items-center gap-2">
-              <Image
-                src="/file.svg"
-                alt="File icon"
-                width={16}
-                height={16}
-                className="invert"
-              />
-              Markets
-            </button>
-          </Link>
+          <button 
+            className="aol-button flex items-center gap-2"
+            onClick={() => setIsMarketsOpen(true)}
+          >
+            <Image
+              src="/file.svg"
+              alt="File icon"
+              width={16}
+              height={16}
+              className="invert"
+            />
+            Markets
+          </button>
           <button 
             className="aol-button flex items-center gap-2"
             onClick={() => setIsChatOpen(true)}
@@ -98,11 +123,70 @@ export default function Home() {
               setIsChatOpen(false);
             }
           }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         >
-          <div className="relative w-[95%] max-w-4xl" onClick={e => e.stopPropagation()}>
-            <ChatInterface 
-              onClose={() => setIsChatOpen(false)} 
-            />
+          <div 
+            className="relative w-[95%] max-w-4xl win98-window"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div 
+              className="win98-title-bar cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+            >
+              <span>Chat Room</span>
+              <button 
+                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                onClick={() => setIsChatOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-1">
+              <ChatInterface />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isMarketsOpen && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsMarketsOpen(false);
+            }
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <div 
+            className="relative w-[95%] max-w-4xl win98-window"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div 
+              className="win98-title-bar cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+            >
+              <span>Markets</span>
+              <button 
+                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                onClick={() => setIsMarketsOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-1">
+              <Markets />
+            </div>
           </div>
         </div>
       )}
@@ -124,8 +208,6 @@ export default function Home() {
           Start
         </button>
       </div>
-
-      <Markets />
     </div>
   );
 }
