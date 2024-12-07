@@ -268,7 +268,10 @@ export default function ChatInterface() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+      // Check if target exists and is an Element
+      const target = event.target as Element;
+      if (!target) return;
+
       if (
         !target.closest('.emoji-picker-container') && 
         !target.closest('.emoji-button') &&
