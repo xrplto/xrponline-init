@@ -10,6 +10,8 @@ interface ChatMessage {
   timestamp: number;
   ogImage?: string;
   ogTitle?: string;
+  recipient?: string;
+  isPrivate?: boolean;
 }
 
 interface OnlineUser {
@@ -48,8 +50,17 @@ const isXLink = (url: string): boolean => {
   return url.match(/(?:x\.com|twitter\.com)/i) !== null;
 };
 
+const renderUsername = (message: ChatMessage, currentUser: string) => {
+  if (message.isPrivate) {
+    return message.username === currentUser 
+      ? `You → ${message.recipient}`
+      : `${message.username} → You`;
+  }
+  return message.username === currentUser ? 'You' : message.username;
+};
+
 const renderMessageWithLinks = (message: ChatMessage) => {
-  const { text, ogImage, ogTitle } = message;
+  const { text, ogImage, ogTitle, isPrivate } = message;
   
   const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
   if (gifMatch) {
@@ -59,6 +70,9 @@ const renderMessageWithLinks = (message: ChatMessage) => {
   const parts = text.split(urlRegex);
   return (
     <div>
+      {isPrivate && (
+        <span className="text-xs italic mr-2">[Private] </span>
+      )}
       {parts.map((part, i) => {
         if (part.match(urlRegex)) {
           return (
@@ -106,6 +120,7 @@ export default function ChatInterface() {
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [gifResults, setGifResults] = useState<GifResult[]>([]);
   const [gifSearchTerm, setGifSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
   // Replace SSE with polling
   useEffect(() => {
@@ -197,7 +212,9 @@ export default function ChatInterface() {
         text: inputMessage,
         username: username,
         timestamp: Date.now(),
-        ...ogData
+        ...ogData,
+        recipient: selectedUser || undefined,
+        isPrivate: selectedUser ? true : false
       };
 
       try {
@@ -324,17 +341,25 @@ export default function ChatInterface() {
       <div className="flex gap-4">
         {/* Chat messages */}
         <div className="flex-1 flex flex-col space-y-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[600px] overflow-y-auto">
-          {messages.map((message, index) => (
+          {messages.filter(message => 
+            !message.isPrivate || 
+            message.username === username || 
+            message.recipient === username
+          ).map((message, index) => (
             <div
               key={index}
               className={`p-2 rounded-none max-w-[80%] ${
-                message.username === username
-                  ? 'bg-[#000080] text-white self-end'
-                  : 'bg-[#c0c0c0] border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
+                message.isPrivate
+                  ? message.username === username
+                    ? 'bg-pink-500 text-white self-end'
+                    : 'bg-pink-400 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
+                  : message.username === username
+                    ? 'bg-[#000080] text-white self-end'
+                    : 'bg-[#c0c0c0] border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
               }`}
             >
               <div className="text-xs mb-1 font-bold">
-                {message.username === username ? 'You' : message.username}
+                {renderUsername(message, username)}
               </div>
               {renderMessageWithLinks(message)}
             </div>
@@ -347,16 +372,31 @@ export default function ChatInterface() {
           {onlineUsers.map((user) => (
             <div
               key={user.username}
-              className="text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a]"
+              className={`text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer ${
+                selectedUser === user.username ? 'bg-[#000080] text-white' : ''
+              }`}
+              onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
             >
               {user.username}
+              {selectedUser === user.username && ' (DM)'}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Chat input */}
+      {/* Chat input with selected user indicator */}
       <div className="mt-4 flex gap-2 relative">
+        {selectedUser && (
+          <div className="absolute -top-6 left-0 text-sm text-gray-600">
+            Messaging {selectedUser} privately
+            <button 
+              onClick={() => setSelectedUser(null)}
+              className="ml-2 text-xs text-red-500 hover:text-red-700"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         <input
           type="text"
           value={inputMessage}

@@ -7,6 +7,10 @@ interface ChatMessage {
   text: string;
   username: string;
   timestamp: number;
+  ogImage?: string;
+  ogTitle?: string;
+  recipient?: string;
+  isPrivate?: boolean;
 }
 
 // Helper function to add CORS headers
@@ -28,10 +32,10 @@ export async function GET() {
 }
 
 // Handle POST requests to send messages
-export async function POST(request: Request) {
-  const message = await request.json();
+export async function POST(req: Request) {
+  const message: ChatMessage = await req.json();
   messages.push(message);
-  return corsHeaders(NextResponse.json(messages));
+  return new Response(JSON.stringify({ success: true }));
 }
 
 // Optional: Add a DELETE endpoint to clear messages
