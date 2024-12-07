@@ -95,6 +95,33 @@ export default function Home() {
     setIsDragging(false);
   };
 
+  // Add useEffect to handle clicks outside start menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | globalThis.MouseEvent) => {
+      // Check if start menu is open
+      if (isStartMenuOpen) {
+        // Get the start menu element
+        const startMenu = document.getElementById('start-menu');
+        const startButton = document.getElementById('start-button');
+        
+        // If click target is not within start menu or start button, close the menu
+        if (startMenu && startButton && 
+            !(startMenu.contains(event.target as Node) || 
+              startButton.contains(event.target as Node))) {
+          setIsStartMenuOpen(false);
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isStartMenuOpen]); // Only re-run if isStartMenuOpen changes
+
   return (
     <div
       className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20"
@@ -754,6 +781,7 @@ export default function Home() {
       <div className="fixed bottom-0 left-0 right-0 h-[30px] bg-[#c0c0c0] border-t-[1px] border-white flex items-center justify-between">
         <div className="flex items-center relative">
           <button
+            id="start-button"
             className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 ${isStartMenuOpen ? 'active' : ''}`}
             onClick={() => setIsStartMenuOpen(!isStartMenuOpen)}
           >
@@ -769,8 +797,8 @@ export default function Home() {
 
           {isStartMenuOpen && (
             <div
+              id="start-menu"
               className="absolute bottom-full left-1 mb-1 w-[200px] bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] z-50"
-              onClick={() => setIsStartMenuOpen(false)}
             >
               <div className="bg-[#000080] absolute left-0 top-0 bottom-0 w-[20px]"></div>
 
