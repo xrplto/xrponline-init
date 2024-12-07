@@ -12,6 +12,7 @@ export default function Home() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const handleMouseDown = (e: MouseEvent) => {
     setIsDragging(true);
@@ -36,6 +37,26 @@ export default function Home() {
 
   return (
     <div className="win98-desktop min-h-screen p-8 pb-20 gap-16 sm:p-20">
+      <a 
+        href="https://firstledger.net/token/r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp/5852504F6E6C696E650000000000000000000000#"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-4 left-4 flex flex-col items-center w-20 group hover:cursor-pointer"
+      >
+        <div className="w-12 h-12 mb-1">
+          <Image
+            src="/firstledger.png"
+            alt="FirstLedger"
+            width={48}
+            height={48}
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
+          FirstLedger
+        </span>
+      </a>
+
       <div className="text-white text-center mb-8 text-2xl font-bold">
         Welcome to XRPOnline
         <div className="text-sm dial-up-animation">●●● Connected at 56.6 Kbps ●●●</div>
@@ -102,7 +123,10 @@ export default function Home() {
             />
             Chat Rooms
           </button>
-          <button className="aol-button flex items-center gap-2">
+          <button 
+            className="aol-button flex items-center gap-2"
+            onClick={() => setIsHelpOpen(true)}
+          >
             <Image
               src="/globe.svg"
               alt="Globe icon"
@@ -186,6 +210,64 @@ export default function Home() {
             </div>
             <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-1">
               <Markets />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isHelpOpen && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsHelpOpen(false);
+            }
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <div 
+            className="relative w-[95%] max-w-4xl win98-window"
+            style={{
+              transform: `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'auto'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div 
+              className="win98-title-bar cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+            >
+              <span>Help Center</span>
+              <button 
+                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                onClick={() => setIsHelpOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff] p-4">
+              <div className="bg-white p-4 border-2 border-[#1f3973]">
+                <h2 className="text-center font-bold mb-4 text-[#1f3973]">FREQUENTLY ASKED QUESTIONS</h2>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-bold text-[#1f3973]">What is XRPOnline?</h3>
+                    <p className="text-sm mt-1">XRPOnline is your retro-styled gateway to the world of digital assets, specifically focused on XRP.</p>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#1f3973]">How do I use the Chat Rooms?</h3>
+                    <p className="text-sm mt-1">Click on the "Chat Rooms" button to join discussions with other XRP enthusiasts. You can participate in various topic-specific rooms.</p>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#1f3973]">How do I track XRP prices?</h3>
+                    <p className="text-sm mt-1">Use our "Markets" feature to view real-time XRP price updates and market information.</p>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#1f3973]">Need more help?</h3>
+                    <p className="text-sm mt-1">Contact our support team at support@xrponline.com</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
