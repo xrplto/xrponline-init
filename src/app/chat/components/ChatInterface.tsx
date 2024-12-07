@@ -44,6 +44,10 @@ interface TenorResult {
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
+const isXLink = (url: string): boolean => {
+  return url.match(/(?:x\.com|twitter\.com)/i) !== null;
+};
+
 const renderMessageWithLinks = (message: ChatMessage) => {
   const { text, ogImage, ogTitle } = message;
   
@@ -59,14 +63,24 @@ const renderMessageWithLinks = (message: ChatMessage) => {
         if (part.match(urlRegex)) {
           return (
             <div key={i} className="link-preview">
-              <a
-                href={part}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline break-all"
-              >
-                {part}
-              </a>
+              <div className="flex items-center gap-2">
+                <a
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline break-all"
+                >
+                  {part}
+                </a>
+                {isXLink(part) && (
+                  <button 
+                    onClick={() => window.open(part, '_blank')}
+                    className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                  >
+                    Raid 🚀
+                  </button>
+                )}
+              </div>
               {ogImage && (
                 <div className="mt-2 link-preview-card border rounded overflow-hidden max-w-[80px]">
                   <img src={ogImage} alt={ogTitle || 'Link preview'} className="w-full h-auto" />
