@@ -52,7 +52,7 @@ const isXLink = (url: string): boolean => {
 
 const renderUsername = (message: ChatMessage, currentUser: string) => {
   if (message.isPrivate) {
-    return message.username === currentUser 
+    return message.username === currentUser
       ? `You → ${message.recipient}`
       : `${message.username} → You`;
   }
@@ -61,7 +61,7 @@ const renderUsername = (message: ChatMessage, currentUser: string) => {
 
 const renderMessageWithLinks = (message: ChatMessage) => {
   const { text, ogImage, ogTitle, isPrivate } = message;
-  
+
   const gifMatch = text.match(/^\[GIF\]\((.*)\)$/);
   if (gifMatch) {
     return <img src={gifMatch[1]} alt="GIF" className="max-w-[100px] max-h-[100px] rounded object-contain" />;
@@ -87,7 +87,7 @@ const renderMessageWithLinks = (message: ChatMessage) => {
                   {part}
                 </a>
                 {isXLink(part) && (
-                  <button 
+                  <button
                     onClick={() => window.open(part, '_blank')}
                     className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                   >
@@ -202,7 +202,7 @@ export default function ChatInterface() {
     if (inputMessage.trim()) {
       const urls = inputMessage.match(urlRegex);
       let ogData = {};
-      
+
       if (urls) {
         try {
           const response = await fetch('/api/og', {
@@ -273,7 +273,7 @@ export default function ChatInterface() {
       if (!target) return;
 
       if (
-        !target.closest('.emoji-picker-container') && 
+        !target.closest('.emoji-picker-container') &&
         !target.closest('.emoji-button') &&
         !target.closest('.gif-picker-container') &&
         !target.closest('.gif-button')
@@ -328,8 +328,8 @@ export default function ChatInterface() {
 
   if (!isUsernameSet) {
     return (
-      <div className="p-4">
-        <form onSubmit={handleUsernameSubmit} className="flex flex-col gap-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <form onSubmit={handleUsernameSubmit} className="flex flex-col gap-4 w-full max-w-sm">
           <div className="text-center font-bold">Enter your username to join the chat</div>
           <input
             type="text"
@@ -350,121 +350,123 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex flex-col md:flex-row gap-4 p-4 overflow-hidden" style={{ height: 'calc(100vh - 140px)' }}>
-        {/* Chat messages */}
-        <div className="flex-1 flex flex-col space-y-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 overflow-y-auto">
-          {messages.filter(message => 
-            !message.isPrivate || 
-            message.username === username || 
-            message.recipient === username
-          ).map((message, index) => (
-            <div
-              key={index}
-              className={`p-2 rounded-none max-w-[80%] ${
-                message.isPrivate
-                  ? message.username === username
-                    ? 'bg-pink-500 text-white self-end'
-                    : 'bg-pink-400 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
-                  : message.username === username
-                    ? 'bg-[#000080] text-white self-end'
-                    : 'bg-[#c0c0c0] border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
-              }`}
-            >
-              <div className="text-xs mb-1 font-bold">
-                {renderUsername(message, username)}
-              </div>
-              {renderMessageWithLinks(message)}
-            </div>
-          ))}
-        </div>
-
-        {/* Online Users */}
-        <div className="w-full md:w-56 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 h-[120px] md:h-auto overflow-y-auto shrink-0">
-          <div className="font-bold mb-2 text-sm">Online Users</div>
-          <div className="flex flex-wrap gap-1 md:block">
-            {onlineUsers.map((user) => {
-              const status = getUserStatus(user.lastSeen);
-              return (
-                <div
-                  key={user.username}
-                  className={`text-xs md:text-sm py-1 px-2 mb-1 bg-[#c0c0c0] border-[1px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer ${
-                    selectedUser === user.username ? 'bg-[#000080] text-white' : ''
-                  }`}
-                  onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
-                >
-                  <div className="flex items-center gap-1">
-                    <span>{user.username}</span>
-                    <span className="flex items-center">
-                      <span className={`w-1.5 h-1.5 rounded-full ${
-                        status === 'online' ? 'bg-green-500' : 
-                        status === 'inactive' ? 'bg-yellow-500' : 
-                        'bg-gray-500'
-                      }`} />
-                      <span className="text-xs opacity-75 hidden md:inline-block ml-1">
-                        {status === 'online' ? 'online' : 
-                         status === 'inactive' ? 'inactive' : 
-                         'offline'}
-                      </span>
-                    </span>
-                    {selectedUser === user.username && ' (DM)'}
-                  </div>
+    <div className="flex flex-col h-[calc(100vh-8rem)]">
+      {/* Main content area */}
+      <div className="flex-1 p-0 overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-0 h-full">
+          {/* Chat messages */}
+          <div className="flex-1 flex flex-col bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-4 overflow-y-auto">
+            {messages.filter(message =>
+              !message.isPrivate ||
+              message.username === username ||
+              message.recipient === username
+            ).map((message, index) => (
+              <div
+                key={index}
+                className={`py-4 px-5 rounded mb-4 max-w-[92%] text-[18px] leading-relaxed ${
+                  message.isPrivate
+                    ? message.username === username
+                      ? 'bg-pink-500 text-white self-end'
+                      : 'bg-pink-400 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
+                    : message.username === username
+                      ? 'bg-[#000080] text-white self-end'
+                      : 'bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] self-start'
+                }`}
+              >
+                <div className="text-[16px] font-bold mb-2.5">
+                  {renderUsername(message, username)}
                 </div>
-              );
-            })}
+                <div className="break-words">
+                  {renderMessageWithLinks(message)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Online Users - improved readability */}
+          <div className="w-full md:w-32 bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-1 h-[32px] md:h-auto overflow-y-auto shrink-0">
+            <div className="font-bold text-[10px] mb-1 border-b pb-1">
+              Online Users ({onlineUsers.length})
+            </div>
+            <div className="flex flex-wrap md:block">
+              {onlineUsers.map((user) => {
+                const status = getUserStatus(user.lastSeen);
+                return (
+                  <div
+                    key={user.username}
+                    className={`text-[10px] py-1 px-2 mb-1 bg-[#c0c0c0] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
+                      selectedUser === user.username ? 'bg-[#000080] text-white' : ''
+                    }`}
+                    onClick={() => setSelectedUser(user.username === selectedUser ? null : user.username)}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>{user.username}</span>
+                      <span className="flex items-center">
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          status === 'online' ? 'bg-green-500' :
+                          status === 'inactive' ? 'bg-yellow-500' :
+                          'bg-gray-500'
+                        }`} />
+                      </span>
+                      {selectedUser === user.username && ' (DM)'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Chat input section - Fixed at bottom */}
-      <div className="p-4 pt-0 bg-white">
-        <div className="flex flex-col gap-2 relative">
+      {/* Chat input section - improved sizing */}
+      <div className="p-1 bg-white border-t border-gray-200">
+        <div className="flex flex-col relative">
           {selectedUser && (
-            <div className="text-sm text-gray-600">
+            <div className="text-[10px] mb-1 text-gray-600">
               Messaging {selectedUser} privately
-              <button 
+              <button
                 onClick={() => setSelectedUser(null)}
-                className="ml-2 text-xs text-red-500 hover:text-red-700"
+                className="ml-1 text-[10px] text-red-500 hover:text-red-700"
               >
                 ✕
               </button>
             </div>
           )}
-          
+
           {/* Message input */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1">
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="flex-1 min-w-[200px] p-3 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none"
+              className="flex-1 min-w-[200px] px-2 py-1 text-[11px] bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] focus:outline-none h-6"
             />
-            
+
             {/* Button group */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1">
               <button
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="emoji-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+                className="emoji-button bg-[#c0c0c0] text-black px-2 h-6 text-[11px] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
               >
                 😊
               </button>
               <button
                 onClick={() => setShowGifPicker(!showGifPicker)}
-                className="gif-button bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+                className="gif-button bg-[#c0c0c0] text-black px-2 h-6 text-[11px] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
               >
                 GIF
               </button>
               <button
                 onClick={handleSend}
-                className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+                className="bg-[#c0c0c0] text-black px-2 h-6 text-[11px] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
               >
                 Send
               </button>
               <button
                 onClick={clearChat}
-                className="bg-[#c0c0c0] text-black px-4 py-2 border-[2px] border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
+                className="bg-[#c0c0c0] text-black px-2 h-6 text-[11px] border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] active:border-[#0a0a0a] active:border-l-[#0a0a0a] active:border-t-[#0a0a0a] hover:bg-[#d4d4d4]"
               >
                 Clear
               </button>
@@ -481,7 +483,7 @@ export default function ChatInterface() {
               />
             </div>
           )}
-          
+
           {showGifPicker && (
             <div className="gif-picker-container absolute bottom-full right-0 mb-2 bg-white border-[2px] border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-2 w-[320px] max-w-full">
               <input
