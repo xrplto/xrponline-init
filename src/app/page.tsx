@@ -23,6 +23,13 @@ export default function Home() {
   const [isSettingsMinimized, setIsSettingsMinimized] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BG_COLOR);
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
+  const [isInternetOpen, setIsInternetOpen] = useState(false);
+  const [isInternetMinimized, setIsInternetMinimized] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState('https://xrponline.chat');
+  const [urlInput, setUrlInput] = useState('https://xrponline.chat');
+  const [isLoading, setIsLoading] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: '95%', height: '400px' });
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Initialize background color from sessionStorage
   useEffect(() => {
@@ -159,6 +166,24 @@ export default function Home() {
           </div>
           <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
             Help Center
+          </span>
+        </button>
+
+        <button
+          onClick={() => setIsInternetOpen(true)}
+          className="flex flex-col items-center w-20 group hover:cursor-pointer"
+        >
+          <div className="w-12 h-12 mb-1">
+            <Image
+              src="/ie.png"
+              alt="Internet Explorer"
+              width={48}
+              height={48}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
+            Internet
           </span>
         </button>
       </div>
@@ -438,6 +463,203 @@ export default function Home() {
         </div>
       )}
 
+      {isInternetOpen && !isInternetMinimized && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsInternetOpen(false);
+            }
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <div
+            className="relative win98-window"
+            style={{
+              width: isMaximized ? '100%' : windowSize.width,
+              height: isMaximized ? '100%' : 'auto',
+              transform: isMaximized ? 'none' : `translate(${position.x}px, ${position.y}px)`,
+              cursor: isDragging ? 'grabbing' : 'auto',
+              transition: 'all 0.2s ease'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div
+              className="win98-title-bar cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+            >
+              <span>Internet Explorer - {currentUrl}</span>
+              <div className="flex gap-1">
+                <button
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsInternetMinimized(true);
+                  }}
+                >
+                  _
+                </button>
+                <button
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsMaximized(!isMaximized);
+                    if (isMaximized) {
+                      setPosition({ x: 0, y: 0 });
+                      setWindowSize({ width: '95%', height: '400px' });
+                    }
+                  }}
+                >
+                  □
+                </button>
+                <button
+                  className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                  onClick={() => {
+                    setIsInternetOpen(false);
+                    setIsMaximized(false);
+                    setWindowSize({ width: '95%', height: '400px' });
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <div className="w-full bg-[#c0c0c0] border-[3px] shadow-[inset_-1px_-1px_#0a0a0a,inset_1px_1px_#dfdfdf,inset_-2px_-2px_grey,inset_2px_2px_#fff]">
+              <div className="flex items-center gap-2 p-1 border-b border-[#808080]">
+                <button className="win98-button px-2 py-1">File</button>
+                <button className="win98-button px-2 py-1">Edit</button>
+                <button className="win98-button px-2 py-1">View</button>
+                <button className="win98-button px-2 py-1">Favorites</button>
+                <button className="win98-button px-2 py-1">Help</button>
+              </div>
+              <div className="flex items-center gap-2 p-1 border-b border-[#808080]">
+                <button 
+                  className="win98-button px-2 py-1"
+                  onClick={() => window.history.back()}
+                >
+                  Back
+                </button>
+                <button 
+                  className="win98-button px-2 py-1"
+                  onClick={() => window.history.forward()}
+                >
+                  Forward
+                </button>
+                <button 
+                  className="win98-button px-2 py-1"
+                  onClick={() => setIsLoading(false)}
+                >
+                  Stop
+                </button>
+                <button 
+                  className="win98-button px-2 py-1"
+                  onClick={() => {
+                    setIsLoading(true);
+                    setTimeout(() => {
+                      setIsLoading(false);
+                    }, 1000);
+                  }}
+                >
+                  Refresh
+                </button>
+                <button 
+                  className="win98-button px-2 py-1"
+                  onClick={() => {
+                    setUrlInput('https://xrponline.chat');
+                    setCurrentUrl('https://xrponline.chat');
+                  }}
+                >
+                  Home
+                </button>
+              </div>
+              <div className="flex items-center gap-2 p-1 border-b border-[#808080]">
+                <span>Address:</span>
+                <input 
+                  type="text" 
+                  className="win98-button flex-1 px-2 py-1" 
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setIsLoading(true);
+                      setCurrentUrl(urlInput);
+                      setTimeout(() => {
+                        setIsLoading(false);
+                      }, 1000);
+                    }
+                  }}
+                />
+                <button 
+                  className="win98-button px-2 py-1"
+                  onClick={() => {
+                    setIsLoading(true);
+                    setCurrentUrl(urlInput);
+                    setTimeout(() => {
+                      setIsLoading(false);
+                    }, 1000);
+                  }}
+                >
+                  Go
+                </button>
+              </div>
+              <div 
+                className="bg-white p-4 overflow-auto"
+                style={{ 
+                  height: isMaximized ? 'calc(100vh - 140px)' : windowSize.height 
+                }}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="animate-spin text-4xl">💿</div>
+                  </div>
+                ) : (
+                  <iframe
+                    src={currentUrl}
+                    className="w-full h-full border-0"
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                    referrerPolicy="no-referrer"
+                    onError={() => {
+                      setCurrentUrl('about:blank');
+                    }}
+                  />
+                )}
+              </div>
+
+              {!isMaximized && (
+                <div
+                  className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    const startWidth = parseInt(windowSize.width);
+                    const startHeight = parseInt(windowSize.height);
+
+                    const handleMouseMove = (e: MouseEvent) => {
+                      const newWidth = startWidth + (e.clientX - startX);
+                      const newHeight = startHeight + (e.clientY - startY);
+                      setWindowSize({
+                        width: `${Math.max(400, newWidth)}px`,
+                        height: `${Math.max(300, newHeight)}px`
+                      });
+                    };
+
+                    const handleMouseUp = () => {
+                      document.removeEventListener('mousemove', handleMouseMove);
+                      document.removeEventListener('mouseup', handleMouseUp);
+                    };
+
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+                  }}
+                >
+                  <div className="w-0 h-0 border-8 border-transparent border-r-[#808080] border-b-[#808080] transform rotate-45" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mt-8"></div>
 
       <div className="fixed bottom-0 left-0 right-0 h-[30px] bg-[#c0c0c0] border-t-[1px] border-white flex items-center justify-between">
@@ -580,6 +802,22 @@ export default function Home() {
                 className="mr-1"
               />
               Display Settings
+            </button>
+          )}
+
+          {isInternetOpen && (
+            <button
+              className={`win98-button h-[22px] px-2 mx-1 flex items-center gap-2 min-w-[120px] ${isInternetMinimized ? 'active' : ''}`}
+              onClick={() => setIsInternetMinimized(false)}
+            >
+              <Image
+                src="/ie.png"
+                alt="Internet"
+                width={16}
+                height={16}
+                className="mr-1"
+              />
+              Internet Explorer
             </button>
           )}
         </div>
