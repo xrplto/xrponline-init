@@ -30,6 +30,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: '95%', height: '400px' });
   const [isMaximized, setIsMaximized] = useState(false);
+  const [currentTime, setCurrentTime] = useState('');
 
   // Initialize background color from sessionStorage
   useEffect(() => {
@@ -47,6 +48,20 @@ export default function Home() {
     sessionStorage.setItem('desktop-background-color', backgroundColor);
     document.documentElement.style.setProperty('--desktop-bg-color', backgroundColor);
   }, [backgroundColor]);
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setCurrentTime(`${hours}:${minutes}`);
+    };
+
+    updateTime(); // Initial call
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleMouseDown = (e: MouseEvent) => {
     setIsDragging(true);
@@ -822,7 +837,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="flex items-center mr-2">
+        <div className="flex items-center mr-2 gap-2">
           <div
             className="win98-button h-[22px] px-2 flex items-center gap-2 cursor-pointer"
             onClick={() => setShowConnectionInfo(true)}
@@ -835,6 +850,9 @@ export default function Home() {
               </div>
             </div>
             <span className="text-xs">56.6 Kbps</span>
+          </div>
+          <div className="win98-button h-[22px] px-2 flex items-center">
+            <span className="text-xs">{currentTime}</span>
           </div>
         </div>
       </div>
