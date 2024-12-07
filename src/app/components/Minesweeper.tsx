@@ -97,6 +97,11 @@ const Minesweeper = ({ onClose, onMinimize, onMouseDown }: MinesweeperProps) => 
       // Game Over
       setGameOver(true);
       setFace('😵');
+      // Stop the timer
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
+      }
       // Reveal all mines
       for (let i = 0; i < GRID_SIZE; i++) {
         for (let j = 0; j < GRID_SIZE; j++) {
