@@ -233,7 +233,7 @@ export default function Home() {
       </div>
 
       {isWelcomeNoteOpen && (
-        <div className="absolute top-4 right-4 win98-window w-[200px] sm:w-[300px]">
+        <div className="absolute top-4 right-4 win98-window w-[180px] sm:w-[300px]">
           <div className="win98-title-bar">
             <span className="text-xs sm:text-base">Welcome Note</span>
             <div className="flex gap-1">
@@ -246,14 +246,14 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="p-1.5 sm:p-4 bg-[#ffffe1]">
-            <div className="flex flex-col gap-1 sm:gap-4">
-              <div className="text-sm sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
-              <div className="text-[10px] sm:text-sm space-y-0.5 sm:space-y-2">
+          <div className="p-1 sm:p-4 bg-[#ffffe1]">
+            <div className="flex flex-col gap-0.5 sm:gap-4">
+              <div className="text-xs sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
+              <div className="text-[9px] sm:text-sm space-y-0.5 sm:space-y-2">
                 <p>Yes, I&apos;m Brad Garlinghouse.<br/>Built this CTO in 12h.</p>
                 <p>Our goal: Make XRPOnline the greatest retro community.</p>
                 <p>Everyone should be raiding and contributing to make XRPOnline great! Questions? Check the Help Center or ask me.</p>
-                <p className="mt-2 text-right">- Brad G.</p>
+                <p className="mt-1 sm:mt-2 text-right">- Brad G.</p>
               </div>
             </div>
           </div>
