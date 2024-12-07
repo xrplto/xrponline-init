@@ -781,7 +781,7 @@ export default function Home() {
                 }}
               >
                 <Image src="/window.svg" alt="Chat" width={16} height={16} className="invert" />
-                Chat Rooms
+                Chat
               </button>
 
               <button
