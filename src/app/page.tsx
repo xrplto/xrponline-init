@@ -25,8 +25,8 @@ export default function Home() {
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   const [isInternetOpen, setIsInternetOpen] = useState(false);
   const [isInternetMinimized, setIsInternetMinimized] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState('https://xrponline.chat');
-  const [urlInput, setUrlInput] = useState('https://xrponline.chat');
+  const [currentUrl, setCurrentUrl] = useState('https://xrpl.org/');
+  const [urlInput, setUrlInput] = useState('https://xrpl.org/');
   const [isLoading, setIsLoading] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: '95%', height: '400px' });
   const [isMaximized, setIsMaximized] = useState(false);
@@ -579,8 +579,8 @@ export default function Home() {
                 <button 
                   className="win98-button px-2 py-1"
                   onClick={() => {
-                    setUrlInput('https://xrponline.chat');
-                    setCurrentUrl('https://xrponline.chat');
+                    setUrlInput('https://xrpl.org/');
+                    setCurrentUrl('https://xrpl.org/');
                   }}
                 >
                   Home
