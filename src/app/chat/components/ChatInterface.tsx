@@ -383,19 +383,19 @@ export default function ChatInterface() {
             ))}
           </div>
 
-          {/* Online Users - improved readability */}
-          <div className="w-full md:w-32 bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-1 h-[32px] md:h-auto overflow-y-auto shrink-0">
+          {/* Online Users - improved mobile view */}
+          <div className="w-full md:w-32 bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-1 h-[120px] md:h-auto overflow-y-auto shrink-0">
             <div className="font-bold text-[10px] mb-1 border-b pb-1">
               Online Users ({onlineUsers.length})
             </div>
-            <div className="flex flex-wrap md:block">
+            <div className="flex flex-wrap md:block gap-1">
               {onlineUsers.map((user) => {
                 const status = getUserStatus(user.lastSeen);
                 const isCurrentUser = user.username === username;
                 return (
                   <div
                     key={user.username}
-                    className={`text-[10px] py-1 px-2 mb-1 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
+                    className={`text-[10px] py-1 px-2 mb-1 mr-1 md:mr-0 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
                       selectedUser === user.username ? 'bg-[#000080] text-white' : 
                       isCurrentUser ? 'bg-[#008000] text-white' : 'bg-[#c0c0c0]'
                     }`}

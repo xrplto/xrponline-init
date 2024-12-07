@@ -930,7 +930,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <span className="text-xs">56.6 Kbps</span>
+            <span className="hidden sm:inline text-xs">56.6 Kbps</span>
+            <span className="sm:hidden text-xs">56K</span>
           </div>
           <div className="win98-button h-[22px] px-2 flex items-center">
             <span className="text-xs">{currentTime}</span>
