@@ -173,13 +173,14 @@ export default function ChatInterface() {
     );
   };
 
-  // Replace SSE with polling
+  // Optimize message polling by increasing interval and adding error handling
   useEffect(() => {
     if (!isUsernameSet) return;
 
     const fetchMessages = async () => {
       try {
         const response = await fetch('/api/chat');
+        if (!response.ok) throw new Error('Failed to fetch messages');
         const data = await response.json();
         setMessages(data);
       } catch (error) {
@@ -190,8 +191,8 @@ export default function ChatInterface() {
     // Fetch messages immediately
     fetchMessages();
 
-    // Set up polling interval
-    const intervalId = setInterval(fetchMessages, 1000);
+    // Poll every 3 seconds instead of every second
+    const intervalId = setInterval(fetchMessages, 3000);
 
     return () => clearInterval(intervalId);
   }, [isUsernameSet]);
@@ -204,21 +205,24 @@ export default function ChatInterface() {
     }
   }, []);
 
+  // Optimize online users polling
   useEffect(() => {
     if (!isUsernameSet) return;
 
     const updateOnlineStatus = async () => {
       try {
-        await fetch('/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username, timestamp: Date.now() }),
-        });
+        // Batch these requests together
+        const [updateResponse, usersResponse] = await Promise.all([
+          fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, timestamp: Date.now() }),
+          }),
+          fetch('/api/users')
+        ]);
 
-        const response = await fetch('/api/users');
-        const users = await response.json();
+        if (!usersResponse.ok) throw new Error('Failed to fetch users');
+        const users = await usersResponse.json();
         setOnlineUsers(users);
       } catch (error) {
         console.error('Failed to update online status:', error);
@@ -226,7 +230,8 @@ export default function ChatInterface() {
     };
 
     updateOnlineStatus();
-    const intervalId = setInterval(updateOnlineStatus, 5000);
+    // Increase polling interval to 10 seconds
+    const intervalId = setInterval(updateOnlineStatus, 10000);
 
     return () => clearInterval(intervalId);
   }, [isUsernameSet, username]);
@@ -367,29 +372,46 @@ export default function ChatInterface() {
     }
   };
 
+  // Optimize click counts loading
   useEffect(() => {
     const loadClickCounts = async () => {
-      const urls = messages
-        .map(msg => msg.text.match(urlRegex))
-        .flat()
-        .filter((url): url is string => url !== null && isXLink(url));
-        
-      for (const url of urls) {
-        try {
-          const response = await fetch(`/api/clicks?url=${encodeURIComponent(url)}`);
-          const data = await response.json();
-          setClickCounts(prev => ({
-            ...prev,
-            [url]: data.count
-          }));
-        } catch (error) {
-          console.error('Failed to load click count:', error);
-        }
+      // Extract unique X/Twitter URLs
+      const uniqueUrls = [...new Set(
+        messages
+          .map(msg => msg.text.match(urlRegex))
+          .flat()
+          .filter((url): url is string => url !== null && isXLink(url))
+      )];
+      
+      if (uniqueUrls.length === 0) return;
+
+      try {
+        // Batch all click count requests together
+        const responses = await Promise.all(
+          uniqueUrls.map(url => 
+            fetch(`/api/clicks?url=${encodeURIComponent(url)}`)
+              .then(res => res.json())
+              .then(data => ({ url, count: data.count }))
+          )
+        );
+
+        // Update all click counts at once
+        const newClickCounts = responses.reduce((acc, { url, count }) => {
+          acc[url] = count;
+          return acc;
+        }, {} as ClickCounts);
+
+        setClickCounts(prev => ({
+          ...prev,
+          ...newClickCounts
+        }));
+      } catch (error) {
+        console.error('Failed to load click counts:', error);
       }
     };
 
     loadClickCounts();
-  }, [messages]);
+  }, [messages]); // Only run when messages change
 
   if (!isUsernameSet) {
     return (
