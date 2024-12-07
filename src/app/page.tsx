@@ -8,6 +8,13 @@ import { useState, MouseEvent, useEffect } from 'react';
 
 const DEFAULT_BG_COLOR = '#008080';
 
+const ensureHttps = (url: string): string => {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `https://${url}`;
+  }
+  return url;
+};
+
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMarketsOpen, setIsMarketsOpen] = useState(false);
@@ -596,7 +603,9 @@ export default function Home() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       setIsLoading(true);
-                      setCurrentUrl(urlInput);
+                      const formattedUrl = ensureHttps(urlInput);
+                      setUrlInput(formattedUrl);
+                      setCurrentUrl(formattedUrl);
                       setTimeout(() => {
                         setIsLoading(false);
                       }, 1000);
@@ -607,7 +616,9 @@ export default function Home() {
                   className="win98-button px-2 py-1"
                   onClick={() => {
                     setIsLoading(true);
-                    setCurrentUrl(urlInput);
+                    const formattedUrl = ensureHttps(urlInput);
+                    setUrlInput(formattedUrl);
+                    setCurrentUrl(formattedUrl);
                     setTimeout(() => {
                       setIsLoading(false);
                     }, 1000);
