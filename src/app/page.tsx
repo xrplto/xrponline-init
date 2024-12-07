@@ -166,14 +166,14 @@ export default function Home() {
           <div className="w-12 h-12 mb-1">
             <Image
               src="/window.svg"
-              alt="Chat Rooms"
+              alt="Chat"
               width={48}
               height={48}
               className="w-full h-full object-contain invert"
             />
           </div>
           <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
-            Chat Rooms
+            Chat
           </span>
         </button>
 
