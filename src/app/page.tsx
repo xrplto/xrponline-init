@@ -251,6 +251,8 @@ export default function Home() {
               <div className="text-sm sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
               <div className="text-[10px] sm:text-sm space-y-0.5 sm:space-y-2">
                 <p>Yes, I&apos;m Brad Garlinghouse.<br/>Built this CTO in 12h.</p>
+                <p>Our goal: Make XRPOnline the greatest retro community.</p>
+                <p>Everyone should be raiding and contributing to make XRPOnline great! Questions? Check the Help Center or ask me.</p>
                 <p className="mt-2 text-right">- Brad G.</p>
               </div>
             </div>
