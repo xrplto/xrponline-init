@@ -1,191 +1,189 @@
-import { useState, useEffect } from 'react';
+'use client';
 
-type CellValue = number | '💣' | '🚩';
-type CellState = 'hidden' | 'revealed' | 'flagged';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Cell {
-  value: CellValue;
-  state: CellState;
+  isMine: boolean;
+  isRevealed: boolean;
+  isFlagged: boolean;
+  neighborMines: number;
 }
 
 interface MinesweeperProps {
-  width?: number;
-  height?: number;
-  mines?: number;
   onClose: () => void;
   onMinimize: () => void;
   onMouseDown: (e: React.MouseEvent) => void;
 }
 
-const Minesweeper = ({ 
-  width = 9, 
-  height = 9, 
-  mines = 10,
-  onClose,
-  onMinimize,
-  onMouseDown 
-}: MinesweeperProps) => {
-  const [board, setBoard] = useState<Cell[][]>([]);
+const Minesweeper = ({ onClose, onMinimize, onMouseDown }: MinesweeperProps) => {
+  const [grid, setGrid] = useState<Cell[][]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
-  const [firstClick, setFirstClick] = useState(true);
-  const [mineCount, setMineCount] = useState(mines);
+  const [mineCount] = useState(10);
+  const [flagCount, setFlagCount] = useState(0);
+  const [face, setFace] = useState('🙂');
+  const GRID_SIZE = 9;
   const [time, setTime] = useState(0);
-  const [timerActive, setTimerActive] = useState(false);
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
-  // Initialize board
-  const initializeBoard = (): Cell[][] => {
-    const newBoard: Cell[][] = [];
-    for (let i = 0; i < height; i++) {
-      newBoard.push([]);
-      for (let j = 0; j < width; j++) {
-        newBoard[i].push({
-          value: 0,
-          state: 'hidden'
-        });
+  const initializeGrid = useCallback(() => {
+    // Create empty grid
+    const newGrid: Cell[][] = Array(GRID_SIZE).fill(null).map(() =>
+      Array(GRID_SIZE).fill(null).map(() => ({
+        isMine: false,
+        isRevealed: false,
+        isFlagged: false,
+        neighborMines: 0,
+      }))
+    );
+
+    // Place mines randomly
+    let minesToPlace = mineCount;
+    while (minesToPlace > 0) {
+      const x = Math.floor(Math.random() * GRID_SIZE);
+      const y = Math.floor(Math.random() * GRID_SIZE);
+      if (!newGrid[x][y].isMine) {
+        newGrid[x][y].isMine = true;
+        minesToPlace--;
       }
     }
-    return newBoard;
-  };
 
-  // Place mines and calculate numbers
-  const placeMines = (board: Cell[][], firstX: number, firstY: number) => {
-    let minesPlaced = 0;
-    const newBoard = [...board];
-
-    while (minesPlaced < mines) {
-      const x = Math.floor(Math.random() * height);
-      const y = Math.floor(Math.random() * width);
-
-      // Don't place mine on first click or where mine already exists
-      if ((x !== firstX || y !== firstY) && newBoard[x][y].value !== '💣') {
-        newBoard[x][y].value = '💣';
-        minesPlaced++;
-
-        // Update numbers around mine
-        for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-            if (x + i >= 0 && x + i < height && y + j >= 0 && y + j < width) {
-              if (newBoard[x + i][y + j].value !== '💣') {
-                newBoard[x + i][y + j].value = (newBoard[x + i][y + j].value as number) + 1;
+    // Calculate neighbor mines
+    for (let i = 0; i < GRID_SIZE; i++) {
+      for (let j = 0; j < GRID_SIZE; j++) {
+        if (!newGrid[i][j].isMine) {
+          let count = 0;
+          // Check all 8 neighbors
+          for (let di = -1; di <= 1; di++) {
+            for (let dj = -1; dj <= 1; dj++) {
+              if (i + di >= 0 && i + di < GRID_SIZE && j + dj >= 0 && j + dj < GRID_SIZE) {
+                if (newGrid[i + di][j + dj].isMine) count++;
               }
             }
           }
-        }
-      }
-    }
-    return newBoard;
-  };
-
-  // Reveal cells recursively
-  const revealCell = (x: number, y: number, currentBoard: Cell[][]) => {
-    if (
-      x < 0 || x >= height || y < 0 || y >= width ||
-      currentBoard[x][y].state === 'revealed' ||
-      currentBoard[x][y].state === 'flagged'
-    ) {
-      return currentBoard;
-    }
-
-    const newBoard = [...currentBoard];
-    newBoard[x][y].state = 'revealed';
-
-    if (newBoard[x][y].value === 0) {
-      for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-          if (i === 0 && j === 0) continue;
-          revealCell(x + i, y + j, newBoard);
+          newGrid[i][j].neighborMines = count;
         }
       }
     }
 
-    return newBoard;
-  };
+    return newGrid;
+  }, [mineCount]);
 
-  // Handle cell click
-  const handleCellClick = (x: number, y: number) => {
-    if (gameOver || gameWon || board[x][y].state === 'flagged') return;
+  useEffect(() => {
+    setGrid(initializeGrid());
+  }, [initializeGrid]);
 
-    let newBoard = [...board];
+  useEffect(() => {
+    return () => {
+      // Cleanup timer on component unmount
+      if (timerInterval) clearInterval(timerInterval);
+    };
+  }, [timerInterval]);
 
-    if (firstClick) {
-      setFirstClick(false);
-      setTimerActive(true);
-      newBoard = placeMines(newBoard, x, y);
+  const revealCell = (x: number, y: number) => {
+    if (gameOver || gameWon || grid[x][y].isFlagged || grid[x][y].isRevealed) return;
+
+    // Start timer on first click if not already running
+    if (!timerInterval) {
+      const interval = setInterval(() => {
+        setTime((prevTime) => prevTime + 1);
+      }, 1000);
+      setTimerInterval(interval);
     }
 
-    if (newBoard[x][y].value === '💣') {
+    const newGrid = [...grid];
+    
+    if (grid[x][y].isMine) {
       // Game Over
       setGameOver(true);
-      setTimerActive(false);
-      newBoard = newBoard.map(row => row.map(cell => ({
-        ...cell,
-        state: cell.value === '💣' ? 'revealed' : cell.state
-      })));
+      setFace('😵');
+      // Reveal all mines
+      for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
+          if (newGrid[i][j].isMine) {
+            newGrid[i][j].isRevealed = true;
+          }
+        }
+      }
     } else {
-      newBoard = revealCell(x, y, newBoard);
+      // Flood fill for empty cells
+      const floodFill = (i: number, j: number) => {
+        if (i < 0 || i >= GRID_SIZE || j < 0 || j >= GRID_SIZE) return;
+        if (newGrid[i][j].isRevealed || newGrid[i][j].isFlagged) return;
+        
+        newGrid[i][j].isRevealed = true;
+        
+        if (newGrid[i][j].neighborMines === 0) {
+          for (let di = -1; di <= 1; di++) {
+            for (let dj = -1; dj <= 1; dj++) {
+              floodFill(i + di, j + dj);
+            }
+          }
+        }
+      };
+
+      floodFill(x, y);
     }
 
-    setBoard(newBoard);
-    checkWinCondition(newBoard);
+    setGrid(newGrid);
+    checkWinCondition(newGrid);
   };
 
-  // Handle right click (flag)
-  const handleRightClick = (e: React.MouseEvent, x: number, y: number) => {
+  const toggleFlag = (x: number, y: number, e: React.MouseEvent) => {
     e.preventDefault();
-    if (gameOver || gameWon || board[x][y].state === 'revealed') return;
+    if (gameOver || gameWon || grid[x][y].isRevealed) return;
 
-    const newBoard = [...board];
-    if (board[x][y].state === 'hidden') {
-      newBoard[x][y].state = 'flagged';
-      setMineCount(prev => prev - 1);
-    } else if (board[x][y].state === 'flagged') {
-      newBoard[x][y].state = 'hidden';
-      setMineCount(prev => prev + 1);
-    }
-    setBoard(newBoard);
+    const newGrid = [...grid];
+    newGrid[x][y].isFlagged = !newGrid[x][y].isFlagged;
+    setGrid(newGrid);
+    setFlagCount(flagCount + (newGrid[x][y].isFlagged ? 1 : -1));
   };
 
-  // Check win condition
-  const checkWinCondition = (currentBoard: Cell[][]) => {
-    const won = currentBoard.every(row =>
-      row.every(cell =>
-        (cell.value === '💣' && cell.state !== 'revealed') ||
-        (cell.value !== '💣' && cell.state === 'revealed')
-      )
-    );
-    if (won) {
-      setGameWon(true);
-      setTimerActive(false);
+  const checkWinCondition = (currentGrid: Cell[][]) => {
+    for (let i = 0; i < GRID_SIZE; i++) {
+      for (let j = 0; j < GRID_SIZE; j++) {
+        if (!currentGrid[i][j].isMine && !currentGrid[i][j].isRevealed) return;
+      }
+    }
+    setGameWon(true);
+    setFace('😎');
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
     }
   };
 
-  // Reset game
   const resetGame = () => {
-    setBoard(initializeBoard());
+    setGrid(initializeGrid());
     setGameOver(false);
     setGameWon(false);
-    setFirstClick(true);
-    setMineCount(mines);
+    setFlagCount(0);
+    setFace('🙂');
     setTime(0);
-    setTimerActive(false);
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
   };
 
-  // Timer effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (timerActive) {
-      interval = setInterval(() => {
-        setTime(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timerActive]);
+  const getCellContent = (cell: Cell): string | number => {
+    if (!cell.isRevealed) return cell.isFlagged ? '🚩' : '';
+    if (cell.isMine) return '💣';
+    return cell.neighborMines || '';
+  };
 
-  // Initialize board on mount
-  useEffect(() => {
-    setBoard(initializeBoard());
-  }, []);
+  const getCellColor = (cell: Cell): string => {
+    if (!cell.isRevealed) return '';
+    if (cell.neighborMines === 1) return 'text-blue-600';
+    if (cell.neighborMines === 2) return 'text-green-600';
+    if (cell.neighborMines === 3) return 'text-red-600';
+    if (cell.neighborMines === 4) return 'text-blue-900';
+    if (cell.neighborMines === 5) return 'text-red-900';
+    if (cell.neighborMines === 6) return 'text-teal-600';
+    if (cell.neighborMines === 7) return 'text-black';
+    if (cell.neighborMines === 8) return 'text-gray-600';
+    return '';
+  };
 
   return (
     <div className="win98-window">
@@ -211,42 +209,37 @@ const Minesweeper = ({
       </div>
       <div className="p-4 bg-[#c0c0c0]">
         <div className="flex justify-between items-center mb-4">
-          <div className="win98-button px-2 py-1">💣 {mineCount}</div>
+          <div className="win98-button px-2 py-1">
+            💣 {mineCount - flagCount}
+          </div>
           <button
-            className="win98-button px-4 py-1"
+            className="win98-button px-4 py-1 text-2xl leading-none"
             onClick={resetGame}
           >
-            {gameOver ? '😵' : gameWon ? '😎' : '🙂'}
+            {face}
           </button>
-          <div className="win98-button px-2 py-1">⏰ {time}</div>
+          <div className="win98-button px-2 py-1">
+            ⏱️ {time.toString().padStart(3, '0')}
+          </div>
         </div>
-        <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${width}, 1fr)` }}>
-          {board.map((row, x) =>
-            row.map((cell, y) => (
+        <div className="grid grid-cols-9 gap-1">
+          {grid.map((row, i) =>
+            row.map((cell, j) => (
               <button
-                key={`${x}-${y}`}
-                className={`win98-button w-8 h-8 flex items-center justify-center text-sm
-                  ${cell.state === 'revealed' ? 'active' : ''}`}
-                onClick={() => handleCellClick(x, y)}
-                onContextMenu={(e) => handleRightClick(e, x, y)}
-                disabled={gameOver || gameWon}
+                key={`${i}-${j}`}
+                className={`win98-button w-8 h-8 flex items-center justify-center text-sm font-bold
+                  ${cell.isRevealed ? 'active' : ''} ${getCellColor(cell)}`}
+                onClick={() => revealCell(i, j)}
+                onContextMenu={(e) => toggleFlag(i, j, e)}
+                onMouseDown={() => setFace('😮')}
+                onMouseUp={() => !gameOver && !gameWon && setFace('🙂')}
+                onMouseLeave={() => !gameOver && !gameWon && setFace('🙂')}
               >
-                {cell.state === 'revealed'
-                  ? cell.value === 0
-                    ? ''
-                    : cell.value
-                  : cell.state === 'flagged'
-                    ? '🚩'
-                    : ''}
+                {getCellContent(cell)}
               </button>
             ))
           )}
         </div>
-        {(gameOver || gameWon) && (
-          <div className="mt-4 text-center font-bold">
-            {gameOver ? 'Game Over!' : 'You Win!'}
-          </div>
-        )}
       </div>
     </div>
   );
