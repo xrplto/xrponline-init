@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import UsernamePrompt from './UsernamePrompt';
+import LatestBuys from './LatestBuys';
 
 interface ChatMessage {
   id?: string;
@@ -474,7 +475,12 @@ export default function ChatInterface() {
       )}
       {/* Main content area */}
       <div className="flex-1 p-0 overflow-hidden">
-        <div className="flex flex-col md:flex-row gap-0 h-full">
+        {/* Latest Buys Bar - New Position */}
+        <div className="w-full bg-white mb-1">
+          <LatestBuys />
+        </div>
+        
+        <div className="flex flex-col md:flex-row gap-0 h-[calc(100%-40px)]">
           {/* Chat messages */}
           <div className="flex-1 flex flex-col bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-4 overflow-y-auto">
             {messages.filter(message =>
@@ -516,43 +522,45 @@ export default function ChatInterface() {
           </div>
 
           {/* Online Users - improved mobile view */}
-          <div className="w-full md:w-32 bg-white border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-1 h-[120px] md:h-auto overflow-y-auto shrink-0">
-            <div className="font-bold text-[10px] mb-1 border-b pb-1">
-              Online Users ({onlineUsers.length})
-            </div>
-            <div className="flex flex-wrap md:block gap-1">
-              {onlineUsers.map((user) => {
-                const status = getUserStatus(user.lastSeen);
-                const isCurrentUser = user.username === username;
-                const isAdmin = user.username === 'XRPOnline';
-                return (
-                  <div
-                    key={user.username}
-                    className={`text-[10px] py-1 px-2 mb-1 mr-1 md:mr-0 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
-                      selectedUser === user.username ? 'bg-[#000080] text-white' :
-                      isCurrentUser ? 'bg-[#008000] text-white' : 'bg-[#c0c0c0]'
-                    }`}
-                    onClick={() => !isCurrentUser && setSelectedUser(user.username === selectedUser ? null : user.username)}
-                  >
-                    <div className="flex items-center gap-1">
-                      <span>{user.username}{isCurrentUser ? ' (You)' : ''}</span>
-                      {isAdmin && (
-                        <span title="Admin" className="text-xs">
-                          👑
+          <div className="w-full md:w-32 flex flex-col bg-white">
+            <div className="border border-[#0a0a0a] border-r-[#dfdfdf] border-b-[#dfdfdf] p-1 h-[120px] md:h-auto overflow-y-auto shrink-0">
+              <div className="font-bold text-[10px] mb-1 border-b pb-1">
+                Online Users ({onlineUsers.length})
+              </div>
+              <div className="flex flex-wrap md:block gap-1">
+                {onlineUsers.map((user) => {
+                  const status = getUserStatus(user.lastSeen);
+                  const isCurrentUser = user.username === username;
+                  const isAdmin = user.username === 'XRPOnline';
+                  return (
+                    <div
+                      key={user.username}
+                      className={`text-[10px] py-1 px-2 mb-1 mr-1 md:mr-0 border border-[#dfdfdf] border-r-[#0a0a0a] border-b-[#0a0a0a] cursor-pointer hover:bg-[#a0a0a0] transition-colors ${
+                        selectedUser === user.username ? 'bg-[#000080] text-white' :
+                        isCurrentUser ? 'bg-[#008000] text-white' : 'bg-[#c0c0c0]'
+                      }`}
+                      onClick={() => !isCurrentUser && setSelectedUser(user.username === selectedUser ? null : user.username)}
+                    >
+                      <div className="flex items-center gap-1">
+                        <span>{user.username}{isCurrentUser ? ' (You)' : ''}</span>
+                        {isAdmin && (
+                          <span title="Admin" className="text-xs">
+                            👑
+                          </span>
+                        )}
+                        <span className="flex items-center">
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            status === 'online' ? 'bg-green-500' :
+                            status === 'inactive' ? 'bg-yellow-500' :
+                            'bg-gray-500'
+                          }`} />
                         </span>
-                      )}
-                      <span className="flex items-center">
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          status === 'online' ? 'bg-green-500' :
-                          status === 'inactive' ? 'bg-yellow-500' :
-                          'bg-gray-500'
-                        }`} />
-                      </span>
-                      {selectedUser === user.username && ' (DM)'}
+                        {selectedUser === user.username && ' (DM)'}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
