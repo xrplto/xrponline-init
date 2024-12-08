@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // In-memory storage for click counts (replace with database in production)
-let clickCounts: { [url: string]: number } = {};
+const clickCounts: { [url: string]: number } = {};
 
 export async function POST(request: Request) {
   const { url } = await request.json();
