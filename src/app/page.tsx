@@ -260,27 +260,31 @@ export default function Home() {
       </div>
 
       {isWelcomeNoteOpen && (
-        <div className="absolute top-4 right-4 win98-window w-[180px] sm:w-[300px]">
+        <div className="absolute top-4 right-4 win98-window w-[300px] sm:w-[400px]">
           <div className="win98-title-bar">
-            <span className="text-xs sm:text-base">Welcome Note</span>
-            <div className="flex gap-1">
-              <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">_</button>
-              <button className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0">□</button>
+            <span className="text-sm sm:text-base">Welcome Note</span>
+            <div className="flex gap-0.5 sm:gap-1">
+              <button className="win98-button h-[14px] w-[14px] sm:h-[18px] sm:w-[18px] flex items-center justify-center p-0">_</button>
+              <button className="win98-button h-[14px] w-[14px] sm:h-[18px] sm:w-[18px] flex items-center justify-center p-0">□</button>
               <button 
-                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                className="win98-button h-[14px] w-[14px] sm:h-[18px] sm:w-[18px] flex items-center justify-center p-0"
                 onClick={() => setIsWelcomeNoteOpen(false)}
               >×</button>
             </div>
           </div>
 
-          <div className="p-1 sm:p-4 bg-[#ffffe1]">
-            <div className="flex flex-col gap-0.5 sm:gap-4">
-              <div className="text-xs sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
-              <div className="text-[9px] sm:text-sm space-y-0.5 sm:space-y-2">
-                <p>Welcome to the greatest CTO on the XRP Ledger. Start of XRPOnline community.</p>
-                <p>Our goal: Make XRPOnline the greatest retro community.</p>
-                <p>Everyone should be raiding and contributing to make XRPOnline great! Questions? Check the Help Center or ask me.</p>
-                <p className="mt-1 sm:mt-2 text-right">- Brad G.</p>
+          <div className="p-2 sm:p-4 bg-[#ffffe1]">
+            <div className="flex flex-col gap-2 sm:gap-4">
+              <div className="text-base sm:text-lg font-bold text-[#1f3973]">
+                XRPOnline v1.0
+              </div>
+              <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
+                <p>Welcome to XRPOnline - the greatest CTO on XRPL! 🚀</p>
+                <p>Our mission is to create the best retro-style community in the XRPL ecosystem.</p>
+                <p>Join us in chat and check out the Help Center to learn more!</p>
+                <div className="mt-4 text-right italic">
+                  - Brad G.
+                </div>
               </div>
             </div>
           </div>
