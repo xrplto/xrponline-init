@@ -23,9 +23,7 @@ export default function LatestBuys() {
   useEffect(() => {
     const fetchLatestBuy = async () => {
       try {
-        const base = encodeURIComponent('r3q4Hhc7pSc4rGNMc1mLkQECW4bhTnPVp_5852504F6E6C696E650000000000000000000000');
-        const counter = 'XRP';
-        const url = `https://data.xrplf.org/v1/iou/exchanges/${base}/${counter}?limit=10&descending=true`;
+        const url = 'https://data.xrplf.org/v1/iou/exchanges/r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp_5852504F6E6C696E650000000000000000000000/XRP?limit=10&descending=true';
         
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch data');
