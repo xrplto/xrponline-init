@@ -434,7 +434,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-bold text-[#1f3973]">What is XRPOnline?</h3>
-                    <p className="text-sm mt-1">XRPOnline is a full-fledged operating system built on Next.js and the first world computer on the XRP Ledger (like Ethereum but better).</p>
+                    <p className="text-sm mt-1">XRPOnline is a full-fledged operating system built on Next.js and the first world computer on the XRP Ledger (like Ethereum but better). It's also a time machine taking you back into the world of the 90s, complete with the nostalgic Windows 98 experience!</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">Why did the previous XRPOnline developer rugged?</h3>
@@ -459,6 +459,18 @@ export default function Home() {
                       <li>Sologenic</li>
                     </ul>
                     <p className="text-sm mt-1">These are all decentralized exchanges (DEXs) built on the XRP Ledger.</p>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#1f3973]">DISCLAIMER - PLEASE READ</h3>
+                    <p className="text-sm mt-1">XRPOnline is not responsible for anything that happens to you while using the platform. You are solely responsible for all your interactions with other users.</p>
+                    <p className="text-sm mt-1">⚠️ If something sounds too good to be true, then it probably is. Always do your own research and never invest more than you can afford to lose.</p>
+                    <p className="text-sm mt-1">Remember:</p>
+                    <ul className="text-sm mt-1 list-disc pl-4">
+                      <li>Never share your private keys or seed phrases</li>
+                      <li>Be cautious of users claiming to be project team members</li>
+                      <li>Verify all information independently</li>
+                      <li>There are no guarantees of profits in crypto</li>
+                    </ul>
                   </div>
                   <div>
                     <h3 className="font-bold text-[#1f3973]">Need more help?</h3>
