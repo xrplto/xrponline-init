@@ -1002,7 +1002,7 @@ export default function Home() {
             onClick={e => e.stopPropagation()}
           >
             <div className="win98-title-bar">
-              <span>Connection Status</span>
+              <span>XRP Online</span>
               <button
                 className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
                 onClick={() => setShowConnectionInfo(false)}
@@ -1011,22 +1011,37 @@ export default function Home() {
               </button>
             </div>
             <div className="p-4 bg-[#c0c0c0]">
-              <div className="bg-white p-4 border-2 border-[#1f3973]">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="animate-spin">💿</div>
-                  <span className="font-bold text-[#1f3973]">CONNECTING...</span>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <p>🌐 Dialing XRPL node...</p>
-                  <p>📞 *Dial-up modem sounds intensify*</p>
-                  <p>🔄 Syncing with the future of finance...</p>
-                  <p>✨ Using cutting-edge XRPOnline v1.0 technology</p>
-                  <p className="text-green-600">✅ Connected at blazing fast 56.6 Kbps!</p>
-                  <div className="mt-4 bg-black text-green-400 p-2 font-mono text-xs">
-                    <p>PING xrpl.org... Time=42ms</p>
-                    <p>Ledger sync: 100%</p>
-                    <p>Wallet.exe loaded successfully</p>
-                    <p>Mom, don&apos;t pick up the phone!</p>
+              <div className="bg-white p-4">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="text-2xl font-bold text-[#00489B]">
+                    XRP Online
+                  </div>
+                  
+                  <div className="w-full bg-[#00489B] text-white p-3 text-center">
+                    Connecting to XRPL...
+                  </div>
+
+                  <div className="w-full space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 animate-spin text-center">◯</div>
+                      <span>Dialing into the XRPL Network...</span>
+                    </div>
+                    
+                    <div className="h-6 bg-[#E6E6E6] w-full border border-gray-400">
+                      <div className="h-full bg-[#00489B] animate-[progress_3s_ease-in-out_infinite]" style={{width: '60%'}}></div>
+                    </div>
+
+                    <div className="font-mono text-xs space-y-1 bg-[#E6E6E6] p-2 border border-gray-400">
+                      <p>Welcome to XRP Online!</p>
+                      <p>Verifying node connection...</p>
+                      <p>Connecting at 56,600 BPS...</p>
+                      <p>Connected to: s1.ripple.com</p>
+                      <p className="text-[#00489B]">You've Got XRP!</p>
+                    </div>
+
+                    <div className="text-center text-xs text-gray-600 mt-4">
+                      Click anywhere outside this window to close
+                    </div>
                   </div>
                 </div>
               </div>

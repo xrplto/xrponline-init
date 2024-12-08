@@ -78,4 +78,16 @@
   border-bottom-color: #ffffff;
   border-right-color: #ffffff;
   background-color: #d4d0c8;
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 60%;
+  }
+  100% {
+    width: 100%;
+  }
 } 
