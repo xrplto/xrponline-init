@@ -42,6 +42,13 @@ export default function Home() {
   const [isMinesweeperOpen, setIsMinesweeperOpen] = useState(false);
   const [isMinesweeperMinimized, setIsMinesweeperMinimized] = useState(false);
   const [isWelcomeNoteOpen, setIsWelcomeNoteOpen] = useState(true);
+  const [showTimeSettings, setShowTimeSettings] = useState(false);
+  const [selectedTimezone, setSelectedTimezone] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    }
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  });
 
   // Initialize background color from sessionStorage
   useEffect(() => {
@@ -65,14 +72,25 @@ export default function Home() {
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, '0');
       const minutes = now.getMinutes().toString().padStart(2, '0');
-      setCurrentTime(`${hours}:${minutes}`);
+      setCurrentTime(now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false,
+        timeZone: selectedTimezone 
+      }));
     };
 
     updateTime(); // Initial call
     const interval = setInterval(updateTime, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedTimezone]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('timezone', selectedTimezone);
+    }
+  }, [selectedTimezone]);
 
   const handleMouseDown = (e: MouseEvent) => {
     setIsDragging(true);
@@ -986,7 +1004,10 @@ export default function Home() {
             <span className="hidden sm:inline text-xs">56.6 Kbps</span>
             <span className="sm:hidden text-xs">56K</span>
           </div>
-          <div className="win98-button h-[22px] px-2 flex items-center">
+          <div 
+            className="win98-button h-[22px] px-2 flex items-center cursor-pointer"
+            onClick={() => setShowTimeSettings(true)}
+          >
             <span className="text-xs">{currentTime}</span>
           </div>
         </div>
@@ -1042,6 +1063,78 @@ export default function Home() {
                     <div className="text-center text-xs text-gray-600 mt-4">
                       Click anywhere outside this window to close
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showTimeSettings && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={() => setShowTimeSettings(false)}
+        >
+          <div
+            className="win98-window w-[300px]"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="win98-title-bar">
+              <span>Date/Time Properties</span>
+              <button
+                className="win98-button h-[18px] w-[18px] flex items-center justify-center p-0"
+                onClick={() => setShowTimeSettings(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 bg-[#c0c0c0]">
+              <div className="bg-white p-4 border-2 border-[#808080]">
+                <div className="flex flex-col gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-digital mb-2">{currentTime}</div>
+                    <div className="text-sm">{new Date().toLocaleDateString()}</div>
+                  </div>
+
+                  <div className="border-2 border-inset bg-white p-2">
+                    <div className="font-bold mb-2">Time Zone</div>
+                    <select 
+                      className="win98-button w-full p-1"
+                      value={selectedTimezone}
+                      onChange={(e) => setSelectedTimezone(e.target.value)}
+                    >
+                      <option value="UTC">UTC</option>
+                      <option value="America/New_York">Eastern Time</option>
+                      <option value="America/Chicago">Central Time</option>
+                      <option value="America/Denver">Mountain Time</option>
+                      <option value="America/Los_Angeles">Pacific Time</option>
+                      <option value="Europe/London">London</option>
+                      <option value="Europe/Paris">Paris</option>
+                      <option value="Asia/Tokyo">Tokyo</option>
+                      <option value="Asia/Dubai">Dubai</option>
+                      <option value="Australia/Sydney">Sydney</option>
+                    </select>
+                  </div>
+
+                  <div className="text-sm">
+                    Current time in {selectedTimezone}:<br/>
+                    {new Date().toLocaleTimeString('en-US', { timeZone: selectedTimezone })}
+                  </div>
+
+                  <div className="flex justify-end gap-2 mt-4">
+                    <button 
+                      className="win98-button px-4 py-1"
+                      onClick={() => setShowTimeSettings(false)}
+                    >
+                      OK
+                    </button>
+                    <button 
+                      className="win98-button px-4 py-1"
+                      onClick={() => setShowTimeSettings(false)}
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
               </div>
