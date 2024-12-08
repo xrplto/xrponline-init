@@ -490,15 +490,15 @@ export default function ChatInterface() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       {showWarning && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-yellow-100 border-2 border-yellow-400 text-yellow-800 px-4 py-2 rounded shadow-lg max-w-md">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">⚠️</span>
-            <p className="text-sm">
-              Warning: Never share personal information, wallet seeds, or any identifying details in chat.
+        <div className="fixed top-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 z-50 bg-yellow-100 border-2 border-yellow-400 text-yellow-800 px-3 py-1.5 rounded shadow-lg md:max-w-md">
+          <div className="flex items-start md:items-center gap-2">
+            <span className="text-lg md:text-xl shrink-0">⚠️</span>
+            <p className="text-xs md:text-sm leading-tight flex-1">
+              Never share personal information, wallet seeds, or any identifying details in chat.
             </p>
             <button 
               onClick={() => setShowWarning(false)}
-              className="text-yellow-600 hover:text-yellow-800"
+              className="text-yellow-600 hover:text-yellow-800 shrink-0"
             >
               ✕
             </button>
