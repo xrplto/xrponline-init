@@ -139,7 +139,7 @@ export default function Home() {
             alt="FirstLedger"
             width={48}
             height={48}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain grayscale brightness-[1.2] contrast-[1.2]"
           />
         </div>
         <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
@@ -159,7 +159,7 @@ export default function Home() {
             alt="X (Twitter)"
             width={48}
             height={48}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain grayscale brightness-[1.2] contrast-[1.2]"
           />
         </div>
         <span className="text-white text-xs text-center break-words bg-[#000080] group-hover:bg-[#000080]/80 px-1">
@@ -277,7 +277,7 @@ export default function Home() {
             <div className="flex flex-col gap-0.5 sm:gap-4">
               <div className="text-xs sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
               <div className="text-[9px] sm:text-sm space-y-0.5 sm:space-y-2">
-                <p>Welcome to the greatest CEO on the XRP Ledger. Start of XRPOnline group.</p>
+                <p>Welcome to the greatest CTO on the XRP Ledger. Start of XRPOnline community.</p>
                 <p>Our goal: Make XRPOnline the greatest retro community.</p>
                 <p>Everyone should be raiding and contributing to make XRPOnline great! Questions? Check the Help Center or ask me.</p>
                 <p className="mt-1 sm:mt-2 text-right">- Brad G.</p>
