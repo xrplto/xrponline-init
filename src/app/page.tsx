@@ -277,7 +277,7 @@ export default function Home() {
             <div className="flex flex-col gap-0.5 sm:gap-4">
               <div className="text-xs sm:text-lg font-bold text-[#1f3973]">XRPOnline v1.0</div>
               <div className="text-[9px] sm:text-sm space-y-0.5 sm:space-y-2">
-                <p>Yes, I'm Brad Garlinghouse. Welcome to the greatest CEO on the XRP Ledger. Start of XRPOnline group.</p>
+                <p>Welcome to the greatest CEO on the XRP Ledger. Start of XRPOnline group.</p>
                 <p>Our goal: Make XRPOnline the greatest retro community.</p>
                 <p>Everyone should be raiding and contributing to make XRPOnline great! Questions? Check the Help Center or ask me.</p>
                 <p className="mt-1 sm:mt-2 text-right">- Brad G.</p>
