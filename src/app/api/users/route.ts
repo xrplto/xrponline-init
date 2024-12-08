@@ -28,7 +28,17 @@ export async function POST(request: Request) {
   }
 }
 
+// In your GET handler, filter out old entries
+const activeTimeWindow = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 export async function GET() {
-  cleanupInactiveUsers();
-  return NextResponse.json(onlineUsers);
+  try {
+    const currentTime = Date.now();
+    const activeUsers = onlineUsers.filter(user => 
+      currentTime - user.lastSeen < activeTimeWindow
+    );
+    return new Response(JSON.stringify(activeUsers));
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to fetch users' }), { status: 500 });
+  }
 } 

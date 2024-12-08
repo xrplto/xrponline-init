@@ -80,9 +80,9 @@ const renderUsername = (message: ChatMessage, currentUser: string) => {
 
 const getUserStatus = (lastSeen: number): UserStatus => {
   const timeDiff = Date.now() - lastSeen;
-  if (timeDiff < 10000) { // Within 10 seconds
+  if (timeDiff < 30000) { // Within 30 seconds (was 10 seconds)
     return 'online';
-  } else if (timeDiff < 60000) { // Within 1 minute
+  } else if (timeDiff < 180000) { // Within 3 minutes (was 1 minute)
     return 'inactive';
   }
   return 'offline';
@@ -212,31 +212,63 @@ export default function ChatInterface() {
   useEffect(() => {
     if (!isUsernameSet) return;
 
+    let isSubscribed = true;
+
     const updateOnlineStatus = async () => {
       try {
-        // Batch these requests together
-        const [updateResponse, usersResponse] = await Promise.all([
-          fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, timestamp: Date.now() }),
-          }),
-          fetch('/api/users')
-        ]);
+        // Add retry logic
+        const updateUserStatus = async (retries = 3) => {
+          try {
+            const response = await fetch('/api/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, timestamp: Date.now() }),
+            });
+            
+            if (!response.ok) throw new Error('Failed to update status');
+            
+          } catch (error) {
+            if (retries > 0) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              return updateUserStatus(retries - 1);
+            }
+            throw error;
+          }
+        };
 
+        // Update user status first
+        await updateUserStatus();
+
+        // Then fetch online users
+        const usersResponse = await fetch('/api/users');
         if (!usersResponse.ok) throw new Error('Failed to fetch users');
+        
         const users = await usersResponse.json();
-        setOnlineUsers(users);
+        
+        // Only update state if component is still mounted
+        if (isSubscribed) {
+          // Filter out users that haven't been seen in 5 minutes
+          const activeUsers = users.filter(
+            (user: OnlineUser) => Date.now() - user.lastSeen < 300000
+          );
+          setOnlineUsers(activeUsers);
+        }
       } catch (error) {
         console.error('Failed to update online status:', error);
       }
     };
 
+    // Initial update
     updateOnlineStatus();
-    // Increase polling interval to 10 seconds
-    const intervalId = setInterval(updateOnlineStatus, 10000);
 
-    return () => clearInterval(intervalId);
+    // Poll every 15 seconds instead of 10
+    const intervalId = setInterval(updateOnlineStatus, 15000);
+
+    // Cleanup function
+    return () => {
+      isSubscribed = false;
+      clearInterval(intervalId);
+    };
   }, [isUsernameSet, username]);
 
   const handleUsernameSubmit = (e: React.FormEvent) => {
