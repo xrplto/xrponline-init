@@ -442,8 +442,8 @@ export default function Home() {
                     <p className="text-sm mt-1">It seems like he sold his 6% allocation and proceeded to rug the project.</p>
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#1f3973]">How do I use the Chat Rooms?</h3>
-                    <p className="text-sm mt-1">Click on the &quot;Chat Rooms&quot; button to join discussions with other XRP enthusiasts. We encourage free speech and open expression in our chat rooms.</p>
+                    <h3 className="font-bold text-[#1f3973]">How do I use the Chat?</h3>
+                    <p className="text-sm mt-1">Click on the &quot;Chat&quot; button to join discussions with other XRP enthusiasts. We encourage free speech and open expression in our chat.</p>
                     <p className="text-sm mt-1">Please note: While we support free expression, users must comply with their local laws and regulations. Do not post any content that violates the laws in your jurisdiction.</p>
                   </div>
                   <div>
