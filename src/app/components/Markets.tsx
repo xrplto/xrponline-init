@@ -48,9 +48,15 @@ export default function Markets() {
         const base = encodeURIComponent('r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp_5852504F6E6C696E650000000000000000000000');
         const counter = 'XRP';
 
+        const marketDataUrl = `https://data.xrplf.org/v1/iou/market_data/${base}/${counter}?interval=1d&limit=2&descending=true`;
+        const exchangesUrl = `https://data.xrplf.org/v1/iou/exchanges/${base}/${counter}?limit=5&descending=true`;
+
+        console.log('Fetching market data from:', marketDataUrl);
+        console.log('Fetching exchanges from:', exchangesUrl);
+
         const [marketDataResponse, exchangesResponse] = await Promise.all([
-          fetch(`https://data.xrplf.org/v1/iou/market_data/${base}/${counter}?interval=1d&limit=2&descending=true`),
-          fetch(`https://data.xrplf.org/v1/iou/exchanges/${base}/${counter}?limit=5&descending=true`)
+          fetch(marketDataUrl),
+          fetch(exchangesUrl)
         ]);
 
         if (!marketDataResponse.ok || !exchangesResponse.ok) {
@@ -61,6 +67,8 @@ export default function Markets() {
           marketDataResponse.json(),
           exchangesResponse.json()
         ]);
+
+        console.log('Exchanges data:', exchangesData);
 
         if (marketData && marketData.length > 0) {
           if (marketData.length >= 2) {
@@ -214,8 +222,8 @@ export default function Markets() {
                     {new Date(exchange.executed_time).toLocaleTimeString()}
                   </td>
                   <td className="text-right py-2">
-                    <span className={`font-semibold ${exchange.seller === 'r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp' ? 'text-green-600' : 'text-red-600'}`}>
-                      {exchange.seller === 'r3q4Hhc7pSc4rGNMc1mLkzQECW4bhTnPVp' ? 'BUY' : 'SELL'}
+                    <span className={`font-semibold ${exchange.seller === 'rQJwonL7jgjHqEfMSYQmvV8RHyjRn1XM3f' ? 'text-green-600' : 'text-red-600'}`}>
+                      {exchange.seller === 'rQJwonL7jgjHqEfMSYQmvV8RHyjRn1XM3f' ? 'BUY' : 'SELL'}
                     </span>
                   </td>
                   <td className="text-right py-2">
